@@ -14,7 +14,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['order1' => 'order1'], 200);
     }
 
     /**

@@ -23,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 */
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
+Route::resource('products', ProductController::class);
 Route::middleware('auth:api')->group(function () {
-    Route::resource('posts', CommentController::class);
-    Route::resource('posts', OrderController::class);
+    Route::resource('comments', CommentController::class);
+    Route::resource('orders', OrderController::class);
 });

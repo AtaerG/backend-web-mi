@@ -12,6 +12,7 @@ class PassportAuthController extends Controller{
     {
         $this->validate($request, [
             'name' => 'required|min:5',
+            'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
@@ -19,7 +20,9 @@ class PassportAuthController extends Controller{
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'surname' => $request->surname,
+            'password' => bcrypt($request->password),
+            'role' => 'admin'
         ]);
 
         $token = $user->createToken('miauth')->accessToken;
