@@ -43,6 +43,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function role() {
+        return $this->hasOne(Role::class);
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);

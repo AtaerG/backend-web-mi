@@ -27,5 +27,13 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         Passport::routes();
         //
+        Passport::tokensCan([
+            'admin' => 'Could do everything',
+            'normal_user' => 'Cant add, edit, delete products'
+        ]);
+
+        Passport::setDefaultScope([
+            'basic'
+        ]);
     }
 }

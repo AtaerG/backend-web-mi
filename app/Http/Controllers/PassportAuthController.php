@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class PassportAuthController extends Controller{
     /**
@@ -35,15 +36,25 @@ class PassportAuthController extends Controller{
      */
     public function login(Request $request)
     {
-        $data = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
-        if (auth()->attempt($data)) {
-            $token = auth()->user()->createToken('miauth')->accessToken;
-            return response()->json(['token' => $token], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required'
+        ]);
+
+        if( Auth::attempt(['email'=>$request->email, 'password'=>$request->password]) ) {
+
+            $user = Auth::user();
+            $userRole = $user->role()->first();
+
+            if ($userRole) {
+                $this->scope = $userRole->role;
+            }
+
+            $token = $user->createToken('ataer', [$this->scope]);
+
+            return response()->json([
+                'token' => $token->accessToken
+            ]);
         }
     }
 }

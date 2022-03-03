@@ -14,7 +14,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $product = Product::get();
+        return response()->json($product, 200);
     }
 
     /**
@@ -24,7 +25,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -35,7 +36,14 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $product = new Product();
+        $product->name = $request->get('name');
+        $product->price = $request->get('price');
+        $product->description = $request->get('desciption');
+        $product->price_descount = $request->get('price_descount');
+        //$product->user()->associate(User::findOrFail($request->get('user_id')));
+        $product->save();
+        return response()->json($product, 201);
     }
 
     /**
@@ -46,7 +54,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return response()->json($product, 200);
     }
 
     /**
@@ -57,7 +65,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+
     }
 
     /**
@@ -69,7 +77,11 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $product->name = $request->get('name');
+        $product->price = $request->get('price');
+        $product->description = $request->get('desciption');
+        $product->price_descount = $request->get('price_descount');
+        return response()->json($product,200);
     }
 
     /**
@@ -80,6 +92,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return response()->json(null, 204);
     }
 }
