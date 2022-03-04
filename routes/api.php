@@ -27,14 +27,24 @@ Route::controller(ProductController::class)->group(function () {
 Route::middleware('auth:api','role')->group(function () {
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
-            Route::post('products', 'create');
-            Route::put('products', 'update');
-            Route::delete('products', 'destroy');
+            Route::post('products', 'store');
+            Route::put('products/{product}', 'update');
+            Route::delete('products/{product}', 'destroy');
         });
+        /*
+        Route::post('products', [ProductController::class, 'store']);
+        Route::put('products/{id}', [ProductController::class, 'update']);
+        Route::delete('products/{id}', [ProductController::class, 'destroy']);
+        */
 });
 });
+/*
+
+Admin could do everithing
+User could only create, edit, delete own order comment
 
 Route::middleware('auth:api')->group(function () {
     Route::resource('comments', CommentController::class);
     Route::resource('orders', OrderController::class);
 });
+*/

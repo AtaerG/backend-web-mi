@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
@@ -19,27 +20,19 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         $product = new Product();
         $product->name = $request->get('name');
         $product->price = $request->get('price');
-        $product->description = $request->get('desciption');
+        $product->description = $request->get('description');
+        $product->amount = $request->get('amount');
+        $product->image_url = $request->get('image_url');
         $product->price_descount = $request->get('price_descount');
         //$product->user()->associate(User::findOrFail($request->get('user_id')));
         $product->save();
@@ -52,20 +45,9 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(ProductRequest $product)
     {
         return response()->json($product, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-
     }
 
     /**
@@ -75,12 +57,16 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         $product->name = $request->get('name');
         $product->price = $request->get('price');
-        $product->description = $request->get('desciption');
+        $product->description = $request->get('description');
+        $product->amount = $request->get('amount');
+        $product->image_url = $request->get('image_url');
         $product->price_descount = $request->get('price_descount');
+        //return response()->json($product->name,200);
+        $product->save();
         return response()->json($product,200);
     }
 
