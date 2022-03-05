@@ -18,8 +18,6 @@ class CheckRole
     {
         $userRole = $request->user()->role()->first();
         if ($userRole) {
-
-            // Set scope as admin/moderator based on user role
             $request->request->add([
                 'scope' => $userRole->role
             ]);

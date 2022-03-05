@@ -14,17 +14,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return response()->json(['order1' => 'order1'], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $order = Order::get();
+        return response()->json($order, 200);
     }
 
     /**
@@ -35,7 +26,12 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $order  = new Order();
+        $order->total_price = $request->get('total_price');
+        $order->state = $request->get('state');
+        $order->paid = $request->get('paid');
+        $order->save();
+        return response()->json($order , 201);
     }
 
     /**

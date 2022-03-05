@@ -18,11 +18,19 @@ use App\Http\Controllers\OrderController;
 */
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
-//Route::resource('products', ProductController::class);
+
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
     Route::get('products/{product}', 'show');
 });
+
+Route::controller(CommentController::class)->group(function () {
+    Route::get('comments', 'index');
+    Route::get('comments/{comment}', 'show');
+});
+
+// Route::apiResource('comments', CommentController::class);
+// Route::apiResource('orders', OrderController::class);
 
 Route::middleware('auth:api','role')->group(function () {
     Route::middleware(['scope:admin'])->group(function () {
@@ -32,11 +40,17 @@ Route::middleware('auth:api','role')->group(function () {
             Route::delete('products/{product}', 'destroy');
         });
         /*
-        Route::post('products', [ProductController::class, 'store']);
-        Route::put('products/{id}', [ProductController::class, 'update']);
-        Route::delete('products/{id}', [ProductController::class, 'destroy']);
-        */
-});
+        Route::controller(CommentController::class)->group(function () {
+            Route::post('comments', 'store');
+            Route::put('comments/{comment}', 'update');
+            Route::delete('comments/{comment}', 'destroy');
+        });*/
+    });
+    Route::controller(CommentController::class)->group(function () {
+        Route::post('comments', 'store');
+        Route::put('comments/{comment}', 'update');
+        Route::delete('comments/{comment}', 'destroy');
+    });
 });
 /*
 

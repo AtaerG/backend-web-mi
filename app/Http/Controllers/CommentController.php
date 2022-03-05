@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Http\Requests\CommentRequest;
 
 class CommentController extends Controller
 {
@@ -14,17 +16,8 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $comment = Comment::get();
+        return response()->json($comment, 200);
     }
 
     /**
@@ -33,9 +26,13 @@ class CommentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CommentRequest $request)
     {
-        //
+        $comment = new Comment();
+        $comment->content = $request->get('content');
+        $comment->user_id = $request->get('user_id');
+        $comment->save();
+        return response()->json($comment, 201);
     }
 
     /**
@@ -46,18 +43,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Comment $comment)
-    {
-        //
+        return response()->json($comment, 200);
     }
 
     /**
@@ -69,7 +55,12 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        //
+        if (Gate::denies('update', $comment)) {
+            abort(403);
+        }
+        $comment->content = $request->get('content');
+        $comment->save();
+        return response()->json($comment, 201);
     }
 
     /**
@@ -80,6 +71,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        if (Gate::denies('destroy', $comment)) {
+            abort(403);
+        }
+        $comment->delete();
+        return response()->json(null, 204);
     }
 }
