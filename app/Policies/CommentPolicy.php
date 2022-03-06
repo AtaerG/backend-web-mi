@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\Comment;
+use Illuminate\Auth\Access\Response;
 
 class CommentPolicy
 {
@@ -22,11 +23,15 @@ class CommentPolicy
 
     public function update(User $user, Comment $comment)
     {
-        return $user->id === $comment->user_id || $user->role() === 'admin';
+        return ($user->id === $comment->user_id || $user->role()->first()->role === 'admin') ?
+        Response::allow()
+        : Response::deny('No tiene permisos para modificar commentario');
     }
 
     public function destroy(User $user, Comment $comment)
     {
-        return $user->id === $comment->user_id || $user->role() === 'admin';
+        return ($user->id === $comment->user_id || $user->role()->first()->role === 'admin')?
+        Response::allow()
+        : Response::deny('No tiene permisos para eliminar commentario');
     }
 }

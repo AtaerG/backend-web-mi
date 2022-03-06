@@ -30,7 +30,9 @@ class CommentController extends Controller
     {
         $comment = new Comment();
         $comment->content = $request->get('content');
-        $comment->user_id = $request->get('user_id');
+        $comment->stars = $request->get('stars');
+        $comment->user()->associate($request->get('user_id'));
+        $comment->product()->associate($request->get('product_id'));
         $comment->save();
         return response()->json($comment, 201);
     }
@@ -58,6 +60,7 @@ class CommentController extends Controller
         if (Gate::denies('update', $comment)) {
             abort(403);
         }
+        $comment->stars = $request->get('stars');
         $comment->content = $request->get('content');
         $comment->save();
         return response()->json($comment, 201);
@@ -71,10 +74,12 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        if (Gate::denies('destroy', $comment)) {
-            abort(403);
+        $response = Gate::inspect('destroy', $comment);
+        if ($response->allowed()) {
+            $comment->delete();
+            return response()->json(null, 204);
+        } else {
+            echo $response->message();
         }
-        $comment->delete();
-        return response()->json(null, 204);
     }
 }

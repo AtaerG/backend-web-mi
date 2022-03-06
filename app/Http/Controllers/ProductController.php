@@ -34,7 +34,6 @@ class ProductController extends Controller
         $product->amount = $request->get('amount');
         $product->image_url = $request->get('image_url');
         $product->price_descount = $request->get('price_descount');
-        //$product->user()->associate(User::findOrFail($request->get('user_id')));
         $product->save();
         return response()->json($product, 201);
     }
@@ -45,7 +44,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(ProductRequest $product)
+    public function show(Product $product)
     {
         return response()->json($product, 200);
     }
@@ -65,7 +64,6 @@ class ProductController extends Controller
         $product->amount = $request->get('amount');
         $product->image_url = $request->get('image_url');
         $product->price_descount = $request->get('price_descount');
-        //return response()->json($product->name,200);
         $product->save();
         return response()->json($product,200);
     }

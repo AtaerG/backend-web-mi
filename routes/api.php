@@ -29,36 +29,21 @@ Route::controller(CommentController::class)->group(function () {
     Route::get('comments/{comment}', 'show');
 });
 
-// Route::apiResource('comments', CommentController::class);
-// Route::apiResource('orders', OrderController::class);
 
 Route::middleware('auth:api','role')->group(function () {
+    Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
             Route::put('products/{product}', 'update');
             Route::delete('products/{product}', 'destroy');
         });
-        /*
-        Route::controller(CommentController::class)->group(function () {
-            Route::post('comments', 'store');
-            Route::put('comments/{comment}', 'update');
-            Route::delete('comments/{comment}', 'destroy');
-        });*/
     });
     Route::controller(CommentController::class)->group(function () {
         Route::post('comments', 'store');
         Route::put('comments/{comment}', 'update');
         Route::delete('comments/{comment}', 'destroy');
     });
+    Route::apiResource('orders', OrderController::class);
 });
-/*
 
-Admin could do everithing
-User could only create, edit, delete own order comment
-
-Route::middleware('auth:api')->group(function () {
-    Route::resource('comments', CommentController::class);
-    Route::resource('orders', OrderController::class);
-});
-*/

@@ -50,11 +50,18 @@ class PassportAuthController extends Controller{
                 $this->scope = $userRole->role;
             }
 
-            $token = $user->createToken('ataer', [$this->scope]);
+            $token = $user->createToken('MIWEB', [$this->scope]);
 
-            return response()->json([
-                'token' => $token->accessToken
+            return response()->json(
+            [
+                'user' => auth()->user(),
+                'token' => $token
             ]);
         }
+    }
+    public function logout()
+    {
+        Auth::user()->token()->revoke();
+        return response(['message' => 'You have been successfully logged out.'], 200);
     }
 }
