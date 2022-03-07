@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\UserCreatedMail;
+use Illuminate\Support\Facades\Mail;
 
 class PassportAuthController extends Controller{
     /**
@@ -27,7 +29,7 @@ class PassportAuthController extends Controller{
         ]);
 
         $token = $user->createToken('miauth')->accessToken;
-
+        Mail::to("ataerg.web-designer@outlook.com")->send(new UserCreatedMail($user));
         return response()->json(['token' => $token], 200);
     }
 

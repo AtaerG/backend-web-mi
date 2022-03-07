@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Mail\OrderCreatedMail;
+use App\Mail\ValorationMail;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -42,6 +45,7 @@ class OrderController extends Controller
         $order->user()->associate($request->get('user_id'));
         $order->paid = $request->get('paid');
         $order->save();
+        Mail::to("ataerg.web-designer@outlook.com")->send(new OrderCreatedMail($order));
         return response()->json($order , 201);
     }
 
@@ -73,6 +77,9 @@ class OrderController extends Controller
         }
         $order->total_price = $request->get('total_price');
         $order->state = $request->get('state');
+        if($request->get('state')==="ended"){
+            Mail::to("ataerg.web-designer@outlook.com")->send(new ValorationMail($order, Auth::user()));
+        }
         $order->paid = $request->get('paid');
         $order->save();
         return response()->json($order, 201);
