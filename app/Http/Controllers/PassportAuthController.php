@@ -56,8 +56,7 @@ class PassportAuthController extends Controller{
 
             return response()->json(
             [
-                'user' => auth()->user(),
-                'token' => $token
+                $token
             ]);
         }
     }
