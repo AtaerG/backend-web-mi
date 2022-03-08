@@ -16,10 +16,10 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-        $userRole = $request->user()->role()->first();
+        $userRole = $request->user()->role;
         if ($userRole) {
             $request->request->add([
-                'scope' => $userRole->role
+                'scope' => $userRole
             ]);
         }
 

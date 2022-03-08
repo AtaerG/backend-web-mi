@@ -23,14 +23,14 @@ class OrderPolicy
 
     public function index(User $user, Order $order)
     {
-        return ($user->id === $order->user_id || $user->role()->first()->role === 'admin') ?
+        return ($user->id === $order->user_id || $user->role === 'admin') ?
         Response::allow()
         : Response::deny('No tiene permisos para ver pedidos');
     }
 
     public function show(User $user, Order $order)
     {
-        return ($user->id === $order->user_id || $user->role()->first()->role === 'admin') ?
+        return ($user->id === $order->user_id || $user->role === 'admin') ?
         Response::allow()
         : Response::deny('No tiene permisos para ver pedido');
     }
@@ -38,14 +38,14 @@ class OrderPolicy
 
     public function update(User $user, Order $order)
     {
-        return ($user->id === $order->user_id || $user->role()->first()->role === 'admin') ?
+        return ($user->id === $order->user_id || $user->role === 'admin') ?
         Response::allow()
         : Response::deny('No tiene permisos para modificar pedido');
     }
 
     public function destroy(User $user, Order $order)
     {
-        return ($user->id === $order->user_id || $user->role()->first()->role === 'admin') ?
+        return ($user->id === $order->user_id || $user->role === 'admin') ?
         Response::allow()
         : Response::deny('No tiene permisos para eliminar pedido');
     }

@@ -74,12 +74,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        $response = Gate::inspect('destroy', $comment);
-        if ($response->allowed()) {
+        if (Gate::denies('update', $comment)) {
+            abort(403);
+        }
             $comment->delete();
             return response()->json(null, 204);
-        } else {
-            echo $response->message();
-        }
     }
 }

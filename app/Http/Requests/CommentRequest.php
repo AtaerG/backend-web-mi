@@ -26,7 +26,7 @@ class CommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'content'=>'required|min:20',
+            'content'=>'required',
             'stars'=>'required|numeric|gte:0|lte:5',
         ];
     }
@@ -35,7 +35,6 @@ class CommentRequest extends FormRequest
         return [
             'content.required' => 'El contenido es obligatorio!',
             'stars.required' => 'Cantidad de estrellas es obligatorio!',
-            'content.min' => 'Minimo 20 caracteres!',
             'stars.gte' => 'La cantidad debe ser mayor o igual 0',
             'stars.lte' => 'La cantidad debe ser menor o igual que 5'
         ];

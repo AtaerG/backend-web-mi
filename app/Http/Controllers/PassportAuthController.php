@@ -25,7 +25,7 @@ class PassportAuthController extends Controller{
             'email' => $request->email,
             'surname' => $request->surname,
             'password' => bcrypt($request->password),
-            'role' => 'admin'
+            'role' => 'normal_user'
         ]);
 
         $token = $user->createToken('miauth')->accessToken;
@@ -46,10 +46,10 @@ class PassportAuthController extends Controller{
         if( Auth::attempt(['email'=>$request->email, 'password'=>$request->password]) ) {
 
             $user = Auth::user();
-            $userRole = $user->role()->first();
+            $userRole = $user->role;
 
             if ($userRole) {
-                $this->scope = $userRole->role;
+                $this->scope = $userRole;
             }
 
             $token = $user->createToken('MIWEB', [$this->scope]);
