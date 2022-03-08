@@ -18,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
          'App\Models\Model' => 'App\Policies\ModelPolicy',
           Comment::class => CommentPolicy::class,
           Order::class => OrderPolicy::class,
+          User::class => UserPolicy::class,
     ];
 
     /**

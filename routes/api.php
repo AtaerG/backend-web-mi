@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PassportAuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,12 +41,24 @@ Route::middleware('auth:api','role')->group(function () {
             Route::put('products/{product}', 'update');
             Route::delete('products/{product}', 'destroy');
         });
+        /*
+        Route::controller(UserController::class)->group(function () {
+            Route::get('users', 'index');
+            Route::post('products', 'store');
+            Route::put('products/{product}', 'update');
+            Route::delete('products/{product}', 'destroy');
+        });*/
+    });
+    Route::get('users/admins', [UserController::class, 'getOnlyAdminsIdForChatting']);
+    Route::middleware(['scope:normal_user'])->group(function () {
+        Route::post('messages', [ChatController::class, 'message']);
     });
     Route::controller(CommentController::class)->group(function () {
         Route::post('comments', 'store');
         Route::put('comments/{comment}', 'update');
         Route::delete('comments/{comment}', 'destroy');
     });
+    Route::apiResource('users', UserController::class);
     Route::apiResource('orders', OrderController::class);
 });
 
