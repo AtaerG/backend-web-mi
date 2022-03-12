@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Mail\OrderCreatedMail;
 use App\Mail\ValorationMail;
@@ -45,6 +46,9 @@ class OrderController extends Controller
         $order->user()->associate($request->get('user_id'));
         $order->paid = $request->get('paid');
         $order->save();
+        $array_prod_ids = explode(',',$request->get('products'));
+        $products = Product::find($array_prod_ids);
+        $order->products()->attach($products);
         Mail::to("ataerg.web-designer@outlook.com")->send(new OrderCreatedMail($order));
         return response()->json($order , 201);
     }

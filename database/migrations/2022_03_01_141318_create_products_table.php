@@ -19,7 +19,8 @@ return new class extends Migration
             $table->float('price');
             $table->string('description');
             $table->integer('amount');
-            $table->string('image_url');
+            $table->binary('image_url');
+            $table->string('tag');
             $table->float('price_descount')->nullable();
             $table->timestamps();
         });

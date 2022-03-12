@@ -62,10 +62,20 @@ class ProductController extends Controller
         $product->price = $request->get('price');
         $product->description = $request->get('description');
         $product->amount = $request->get('amount');
-        $product->image_url = $request->get('image_url');
-        $product->price_descount = $request->get('price_descount');
+        $product->image_url = base64_encode($request->get('image_url'));
         $product->save();
         return response()->json($product,200);
+    }
+
+    public function updateAmount(Request $request, Product $product)
+    {
+        if($product->amount > 0){
+            $product->amount =  $request->get('amount');
+            $product->save();
+            return response()->json($product,200);
+        } else {
+            return response()->json(['error'=> 'Ya no hay mas producto!'],200);
+        }
     }
 
     /**

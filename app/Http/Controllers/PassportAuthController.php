@@ -14,8 +14,8 @@ class PassportAuthController extends Controller{
     public function register(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|min:5',
-            'surname' => 'required',
+            'name' => 'required|max:20',
+            'surname' => 'required|max:50',
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
@@ -56,7 +56,8 @@ class PassportAuthController extends Controller{
 
             return response()->json(
             [
-                $token
+                'token' => $token,
+                'user_role' => $token->token->scopes[0],
             ]);
         }
     }
