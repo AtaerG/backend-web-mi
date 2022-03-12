@@ -25,12 +25,14 @@ Route::post('login', [PassportAuthController::class, 'login']);
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
     Route::get('products/{product}', 'show');
+    Route::patch('products/{product}','updateAmount');
 });
 
 Route::controller(CommentController::class)->group(function () {
     Route::get('comments', 'index');
     Route::get('comments/{comment}', 'show');
 });
+
 
 
 Route::middleware('auth:api','role')->group(function () {

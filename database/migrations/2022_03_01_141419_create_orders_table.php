@@ -16,11 +16,13 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->double('total_price');
+            $table->string('status');
+            $table->string('direction');
+            $table->integer('post_code');
+            $table->string('city');
             $table->string('state');
-            $table->string('paid');
-
+            $table->string('country');
             $table->bigInteger('user_id')->unsigned();
-
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });

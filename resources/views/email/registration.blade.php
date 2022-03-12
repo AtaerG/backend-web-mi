@@ -22,7 +22,7 @@ date_default_timezone_set('Europe/Madrid');
 </style>
 <div class="container centered" style="padding: 2rem; background: #f5f5f5;">
     <h1 class="gradient ">MUEBLES INTELIGENTES</h1>
-    <div class="">¡{{$user->name}}, muchas gracias por crear la cuenta de usuario!</div>
+    <div class="">¡Muchas gracias por crear la cuenta de usuario!</div>
     <a href="#" class="button">VER LOS PRODUCTOS DE MI</a>
     <div style="margin-top: 2rem;">Fecha de creacion de la cuenta de usuario: {{date('d-m-y h:i:s')}}</div>
 </div>
