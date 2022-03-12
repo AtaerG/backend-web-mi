@@ -42,9 +42,13 @@ class OrderController extends Controller
     {
         $order  = new Order();
         $order->total_price = $request->get('total_price');
+        $order->status = $request->get('status');
+        $order->direction = $request->get('direction');
+        $order->post_code = $request->get('post_code');
+        $order->city = $request->get('city');
         $order->state = $request->get('state');
-        $order->user()->associate($request->get('user_id'));
-        $order->paid = $request->get('paid');
+        $order->country = $request->get('country');
+        $order->user()->associate(Auth::user()->id);
         $order->save();
         $array_prod_ids = explode(',',$request->get('products'));
         $products = Product::find($array_prod_ids);
@@ -64,7 +68,9 @@ class OrderController extends Controller
         if (Gate::denies('show', $order)) {
             abort(403);
         }
-        return response()->json($order, 200);
+
+        $order_with_products = Order::where('id', '=', $order->id)->with('products')->first();
+        return response()->json(['order'=>$order_with_products], 200);
     }
 
     /**
