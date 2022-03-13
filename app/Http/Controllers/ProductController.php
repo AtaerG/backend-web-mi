@@ -63,7 +63,7 @@ class ProductController extends Controller
         $product->price = $request->get('price');
         $product->description = $request->get('description');
         $product->amount = $request->get('amount');
-        $product->image_url = base64_encode($request->get('image_url'));
+        $product->image_url = $request->get('image_url');
         $product->tag = $request->get('tag');
         $product->save();
         return response()->json($product,200);
