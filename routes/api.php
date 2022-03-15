@@ -25,7 +25,7 @@ Route::post('login', [PassportAuthController::class, 'login']);
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
     Route::get('products/{product}', 'show');
-    Route::patch('products/{product}','updateAmount');
+    Route::put('products/{product}', 'update');
 });
 
 Route::controller(CommentController::class)->group(function () {
@@ -33,14 +33,11 @@ Route::controller(CommentController::class)->group(function () {
     Route::get('comments/{comment}', 'show');
 });
 
-
-
 Route::middleware('auth:api','role')->group(function () {
     Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
-            Route::put('products/{product}', 'update');
             Route::delete('products/{product}', 'destroy');
         });
         /*

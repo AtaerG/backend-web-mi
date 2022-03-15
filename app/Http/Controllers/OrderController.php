@@ -68,9 +68,8 @@ class OrderController extends Controller
         if (Gate::denies('show', $order)) {
             abort(403);
         }
-
         $order_with_products = Order::where('id', '=', $order->id)->with('products')->first();
-        return response()->json(['order'=>$order_with_products], 200);
+        return response()->json($order_with_products, 200);
     }
 
     /**
