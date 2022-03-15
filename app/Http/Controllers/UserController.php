@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if ($user->can('update', $user)) {
+        if ($user->can('show', $user)) {
             return response()->json($user, 200);
         } else {
             return response()->json(['error'=>'No tiene permimsos para ver usuario'], 403);
@@ -52,6 +52,7 @@ class UserController extends Controller
             $user->name = $request->get('name');
             $user->surname = $request->get('surname');
             $user->password = bcrypt($request->get('password'));
+            $user->role = $request->get('role');
             $user->save();
             return response()->json($user, 201);
         } else {

@@ -58,7 +58,13 @@ class PassportAuthController extends Controller{
             [
                 'token' => $token,
                 'user_role' => $token->token->scopes[0],
+                'user_id' => $user->id,
             ]);
+        } else {
+            $user = Auth::user();
+            if($user->email === $request->email){
+                return response()->json(['error' => 'Error en contraseña!'], 403);
+            }
         }
     }
     public function logout()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
+use App\Models\Comment;
 
 class ProductController extends Controller
 {
@@ -47,7 +48,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return response()->json($product, 200);
+        $comments_of_products = $product->comments;
+        return response()->json(['product'=>$product, 'comments'=> $comments_of_products], 200);
     }
 
     /**
@@ -69,17 +71,29 @@ class ProductController extends Controller
         return response()->json($product,200);
     }
 
-    public function updateAmount(Request $request, Product $product)
+    public function addAmount(Product $product)
     {
         if($product->amount > 0){
-            $product->amount =  $request->get('amount');
+            $product->amount =  $product->amount+1;
             $product->save();
-            return response()->json($product,200);
+            //return response()->json($product,200);
         } else {
-            return response()->json(['error'=> 'Ya no hay mas producto!'],200);
+            //return response()->json(['error'=> 'Ya no hay mas producto!'],200);
+        }
+
+    }
+    /*
+    public function reduceAmount(Request $request)
+    {
+        if($product->amount > 0){
+            $product->amount =  $product->amount-1;
+            $product->save();
+            //return response()->json($product,200);
+        } else {
+            //return response()->json(['error'=> 'Ya no hay mas producto!'],200);
         }
     }
-
+    */
     /**
      * Remove the specified resource from storage.
      *
