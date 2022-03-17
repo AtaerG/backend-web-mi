@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,10 @@ Route::controller(CommentController::class)->group(function () {
 });
 
 Route::middleware('auth:api','role')->group(function () {
+
+    Route::post('password/forgot', [PasswordController::class, 'forgot']);
+    Route::post('password/reset', [PasswordController::class, 'reset']);
+
     Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
