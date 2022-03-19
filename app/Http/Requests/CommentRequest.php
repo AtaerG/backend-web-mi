@@ -28,6 +28,8 @@ class CommentRequest extends FormRequest
         return [
             'content'=>'required',
             'stars'=>'required|numeric|gte:0|lte:5',
+            'user_id'=>'required|numeric',
+            'product_id'=>'required|numeric'
         ];
     }
 

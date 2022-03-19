@@ -24,6 +24,7 @@ class PasswordController extends Controller
             'token' => $token
         ]);
 
+        return response()->json($token, 200);
         //Mail::to($email)->send(new PassportResetMail());
     }
 
