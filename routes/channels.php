@@ -13,16 +13,25 @@ use Illuminate\Support\Facades\Auth;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
-
+/*
 
 Broadcast::channel('private-chat.', function ($user) {
     return Auth::check();
 });
 
-Broadcast::channel('private-chat.{chat_id}', function ($user, $chat_id) {
-    return (int)$user->id == (int)$chat_id;
+Broadcast::routes(['middleware' => ['auth:api']]);
+
+
+Broadcast::channel('private-chat.{id}', function ($user, $userId) {
+    return $user->id === $userId;
+  });
+
+Broadcast::channel('private-chat.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
 });
+
+*/
+Broadcast::channel('App.User.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
