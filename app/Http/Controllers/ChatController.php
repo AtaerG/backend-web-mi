@@ -29,7 +29,6 @@ class ChatController extends Controller
      */
     public function sendMessage(Request $request)
     {
-
         $user = User::where('id', $request->get('user_id'))->first();
         /*
         $message = $user->messages()->create([
@@ -37,6 +36,5 @@ class ChatController extends Controller
         ]);
         */
         broadcast(new MessageSent($user, $request->get('message')))->toOthers();
-        return $user;
     }
 }

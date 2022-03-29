@@ -21,7 +21,7 @@ class MessageSent implements  ShouldBroadcast
      *
      * @var User
      */
-    public $id_chat;
+    public $user;
 
     /**
      * Message details
@@ -36,9 +36,9 @@ class MessageSent implements  ShouldBroadcast
      * @return void
      */
 
-    public function __construct($id_chat, $message)
+    public function __construct($user,$message)
     {
-        $this->$id_chat= $id_chat ;
+        $this->user = $user;
         $this->message = $message;
     }
 
@@ -49,7 +49,7 @@ class MessageSent implements  ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('chat'.$this->id_chat);
+        return new PresenceChannel('channel-chat');
     }
 
     public function broadcastAs()
