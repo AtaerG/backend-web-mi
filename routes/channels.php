@@ -39,7 +39,10 @@ Broadcast::channel('channel-chat', function ($user) {
     return $user;
 });
 
-Broadcast::channel('channel-direct.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+Broadcast::channel('channel.{userId}', function ($user, $userId) {
+    return $user;
+    /*if ($user->id === $userId) {
+      return array('name' => $user->name);
+    }*/
+  });
 

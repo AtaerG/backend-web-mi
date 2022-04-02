@@ -30,11 +30,13 @@ class ChatController extends Controller
     public function sendMessage(Request $request)
     {
         $user = User::where('id', $request->get('user_id'))->first();
+        //var_dump($user);
         /*
         $message = $user->messages()->create([
             'message' => $request->get('message')
         ]);
         */
         broadcast(new MessageSent($user, $request->get('message')))->toOthers();
+        return [];
     }
 }

@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class MessageSent implements  ShouldBroadcast
+class Messaging implements  ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -50,17 +50,7 @@ class MessageSent implements  ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel('channel.'.$this->user->id);
+        return ['channel.'.$this->user->id];
     }
- /*
-    public function broadcastOn()
-  {
-      return ['channel.'.$this->user->id];
-  }
-   */
-  public function broadcastAs()
-  {
-      return 'my-event';
-  }
 
 }
