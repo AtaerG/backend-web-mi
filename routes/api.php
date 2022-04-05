@@ -33,12 +33,10 @@ Route::controller(CommentController::class)->group(function () {
     Route::get('comments/{comment}', 'show');
 });
 
+Route::post('messages', [ChatController::class, 'sendMessage']);
 
 Route::middleware('auth:api','role')->group(function () {
-    Route::get('chat', [ChatController::class, 'index']);
-    Route::get('messages', [ChatController::class, 'fetchMessages']);
 
-    Route::post('messages', [ChatController::class, 'sendMessage']);
 
     Route::post('password/forgot', [PasswordController::class, 'forgot']);
     Route::post('password/reset', [PasswordController::class, 'reset']);

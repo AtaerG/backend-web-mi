@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Events\MessageSent;
+use App\Events\Messaging;
 use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
@@ -29,14 +30,15 @@ class ChatController extends Controller
      */
     public function sendMessage(Request $request)
     {
-        $user = User::where('id', $request->get('user_id'))->first();
+        //$user = User::where('id', $request->get('user_id'))->first();
         //var_dump($user);
         /*
         $message = $user->messages()->create([
             'message' => $request->get('message')
         ]);
         */
-        broadcast(new MessageSent($user, $request->get('message')))->toOthers();
-        return [];
+       // broadcast(new MessageSent($user, $request->get('message')))->toOthers();
+        event(new Messaging($request->get('message')));
+        return ['message'=> $request->get('message')];
     }
 }
