@@ -15,6 +15,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 class Messaging implements  ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    public $id;
 
     /**
      * Message details
@@ -29,8 +30,9 @@ class Messaging implements  ShouldBroadcast
      * @return void
      */
 
-    public function __construct($message)
+    public function __construct($id,$message)
     {
+        $this->$id = $id;
         $this->message = $message;
     }
 
@@ -41,11 +43,11 @@ class Messaging implements  ShouldBroadcast
      */
 
     public function broadcastOn()
-  {
-    return new Channel('chat');
-  }
-  public function broadcastAs(){
-      return 'message';
-  }
+    {
+        return new Channel('chat.'.$this->id);
+    }
 
+    public function broadcastAs(){
+      return 'message';
+    }
 }
