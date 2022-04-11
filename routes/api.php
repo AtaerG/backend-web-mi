@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\AppointmentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,6 +65,14 @@ Route::middleware('auth:api','role')->group(function () {
         Route::put('comments/{comment}', 'update');
         Route::delete('comments/{comment}', 'destroy');
     });
+    Route::controller(UserController::class)->group(function () {
+        Route::get('users-admins', 'getAdmins');
+    });
+    Route::controller(AppointmentController::class)->group(function () {
+        Route::post('appt-admin', 'getAdminsAppointments');
+        Route::post('appt-user', 'getUsersAppointments');
+    });
+    Route::apiResource('appointments', AppointmentController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('orders', OrderController::class);
 });

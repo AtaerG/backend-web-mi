@@ -21,8 +21,8 @@ class MessageSent implements  ShouldBroadcast
      *
      * @var User
      */
-    public $user;
-
+    //public $user;
+    public $id;
     /**
      * Message details
      *
@@ -36,9 +36,9 @@ class MessageSent implements  ShouldBroadcast
      * @return void
      */
 
-    public function __construct($user,$message)
+    public function __construct($id,$message)
     {
-        $this->user = $user;
+        $this->id = $id;
         $this->message = $message;
     }
 
@@ -50,14 +50,8 @@ class MessageSent implements  ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel('channel.'.$this->user->id);
+        return new PresenceChannel('channel.'.$this->id);
     }
- /*
-    public function broadcastOn()
-  {
-      return ['channel.'.$this->user->id];
-  }
-   */
   public function broadcastAs()
   {
       return 'my-event';
