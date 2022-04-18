@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 use App\Models\Comment;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -48,8 +49,14 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $comments_of_products = $product->comments;
-        return response()->json(['product'=>$product, 'comments'=> $comments_of_products], 200);
+        //$comment = Comment::get();
+        //$comments_of_products = $product->comments;
+        //$comments_of_product = DB::select("SELECT user_id from comments where product_id = :id", ['id'=> $product->id]);
+        //$user_name = DB::select("SELECT name, surname FROM users WHERE id = :id", ['id' => $comments_of_products->product->user_id]);
+        $comments_with_names = DB::select("SELECT comments.*, users.name, users.surname FROM users INNER JOIN comments ON users.id = comments.user_id");
+        //$user_name = DB::table('users')->where('id', $comments_of_product->user_id)->value('name');
+        //$comments_of_products = $product->comments;
+        return response()->json(['product'=>$product, 'comments'=>$comments_with_names], 200);
     }
 
     /**

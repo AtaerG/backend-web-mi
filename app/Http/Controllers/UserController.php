@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -20,6 +21,12 @@ class UserController extends Controller
         }
         $users = User::get();
         return response()->json($users, 200);
+    }
+
+    public function getAdmins()
+    {
+        $admins = DB::select("SELECT id, name FROM users WHERE role = 'admin'");
+        return response()->json($admins, 200);
     }
 
 

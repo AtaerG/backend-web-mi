@@ -59,6 +59,8 @@ class PassportAuthController extends Controller{
                 'token' => $token,
                 'user_role' => $token->token->scopes[0],
                 'user_id' => $user->id,
+                'email' => $user->email,
+                'name' => $user->name,
             ]);
         } else {
             $user = Auth::user();

@@ -36,7 +36,7 @@ class ProductRequest extends FormRequest
         return [
             'name.required' => 'El nombre es obligatorio!',
             'price.required' =>  'El precio es obligatorio!',
-            'amount.min' => 'La cantidad debe ser mayor o igual que 0!'
+            'amount.min' => 'La cantidad debe ser mayor o igual que 0!',
         ];
     }
 

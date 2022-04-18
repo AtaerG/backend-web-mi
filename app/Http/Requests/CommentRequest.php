@@ -28,6 +28,9 @@ class CommentRequest extends FormRequest
         return [
             'content'=>'required',
             'stars'=>'required|numeric|gte:0|lte:5',
+            'user_id'=>'required|numeric',
+            'product_id'=>'required|numeric',
+            'g-recaptcha-response' => 'required|recaptchav3:register,0.5'
         ];
     }
 
@@ -36,7 +39,7 @@ class CommentRequest extends FormRequest
             'content.required' => 'El contenido es obligatorio!',
             'stars.required' => 'Cantidad de estrellas es obligatorio!',
             'stars.gte' => 'La cantidad debe ser mayor o igual 0',
-            'stars.lte' => 'La cantidad debe ser menor o igual que 5'
+            'stars.lte' => 'La cantidad debe ser menor o igual que 5',
         ];
     }
 

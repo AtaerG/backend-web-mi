@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->string('content');
-            $table->integer('stars');
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('product_id')->unsigned();
-
+            $table->bigInteger('admin_id')->unsigned();
+            $table->string("date");
+            $table->string("time");
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('product_id')->references('id')->on('products');
-
+            $table->foreign('admin_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('appointments');
     }
 };

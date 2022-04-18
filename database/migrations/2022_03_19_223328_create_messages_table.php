@@ -11,17 +11,16 @@ return new class extends Migration
      *
      * @return void
      */
+    protected $fillable = ['message'];
+
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->string('content');
-            $table->integer('stars');
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('product_id')->unsigned();
+            $table->text('message');
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('product_id')->references('id')->on('products');
 
             $table->timestamps();
         });
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('messages');
     }
 };
