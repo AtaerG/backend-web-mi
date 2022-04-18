@@ -25,7 +25,7 @@ class UserController extends Controller
 
     public function getAdmins()
     {
-        $admins = DB::select("SELECT id FROM users WHERE role = 'admin'");
+        $admins = DB::select("SELECT id, name FROM users WHERE role = 'admin'");
         return response()->json($admins, 200);
     }
 

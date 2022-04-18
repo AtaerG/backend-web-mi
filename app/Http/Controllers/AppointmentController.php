@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Appointment;
-use App\MailAppointmentCreatedMail;
-use App\Http\Requests\AppointmentRequest;
 use App\Mail\AppointmentAdminMail;
 use App\Mail\AppointmentuserMail;
 use Illuminate\Support\Facades\Mail;
@@ -34,7 +32,6 @@ class AppointmentController extends Controller
         return response()->json($appointments, 200);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -43,6 +40,10 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        $appointments = DB::select("SELECT * FROM appointments WHERE date = '".$request->get('date')."' AND time = '".$request->get('time')."'");
+        if( $appointments != null){
+            return response()->json(['error' => 'La cita para esta hora ya existe, por favor seleccione otra hora']);
+        }
         $appointment = new Appointment();
         $appointment->user()->associate($request->get('user_id'));
         $appointment->admin_id = $request->get('admin_id');
@@ -66,36 +67,19 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(AppointmentRequest $request, Appointment  $comment)
-    {
-        /*
-        $comment->stars = $request->get('stars');
-        $comment->content = $request->get('content');
-        $comment->save();
-        return response()->json($comment, 201);
-        */
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Appointment $comment)
+    public function destroy(Appointment $appointment)
     {
         /*
         if (Gate::denies('update', $comment)) {
             abort(403);
         }
-        $comment->delete();
-        return response()->json(null, 204);
         */
+        $appointment->delete();
+        return response()->json(null, 204);
     }
 }

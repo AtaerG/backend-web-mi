@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\GoogleV3CaptchaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +23,9 @@ use App\Http\Controllers\AppointmentController;
 */
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
+
+Route::get('google-v3-recaptcha', [GoogleV3CaptchaController::class, 'index']);
+Route::post('validate-g-recaptcha', [GoogleV3CaptchaController::class, 'validateGCaptch']);
 
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
@@ -68,12 +72,20 @@ Route::middleware('auth:api','role')->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('users-admins', 'getAdmins');
     });
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('orders', 'index');
+        Route::post('orders', 'store');
+        Route::get('orders/{order}', 'show');
+        Route::post('orders/user', 'getOrdersOfUser');
+        Route::put('orders/{order}', 'update');
+        Route::delete('orders/{orders}', 'destroy');
+    });
     Route::controller(AppointmentController::class)->group(function () {
+        Route::get('appointments', 'index');
+        Route::post('appointments', 'store');
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
     });
-    Route::apiResource('appointments', AppointmentController::class);
     Route::apiResource('users', UserController::class);
-    Route::apiResource('orders', OrderController::class);
 });
 

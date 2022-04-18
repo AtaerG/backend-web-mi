@@ -25,7 +25,7 @@ class AppointmentRequest extends FormRequest
     {
         return [
             'date'=>'required',
-            'time'=>'required'
+            'time'=>'required',
         ];
     }
 
