@@ -25,21 +25,10 @@ class PasswordController extends Controller
         ]);
 
         return response()->json($token, 200);
-        //Mail::to($email)->send(new PassportResetMail());
     }
 
     public function reset(PasswordResetedRequest $request){
-
         $token =  $request->token;
-        /*
-        if(!$passwordResets = DB::table('password_resets')->where('token', $token)->first()){
-            return response()->json(['error'=>'Invalid token'], 400);
-        }
-
-        if(!$user = User::where('email', $passwordResets->email)->first()){
-            return response()->json(['error'=>'User dont exist'], 404);
-        }
-        */
         $passwordResets = DB::table('password_resets')->where('token', $token)->first();
         $user = User::where('email', $passwordResets->email)->first();
         $user->password = bcrypt($request->password);

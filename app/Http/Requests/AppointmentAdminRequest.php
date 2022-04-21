@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class AppointmentRequest extends FormRequest
+class AppointmentAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,23 +26,14 @@ class AppointmentRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|numeric',
-            'admin_id' => 'required|numeric',
-            'date'=>'required|regex:/^\d{2}\/\d{2}\/\d{4}$/',
-            'time'=>'required|regex:/^\d{2}:\d{2}$/',
+            'admin_id' => 'required|gt:0',
         ];
     }
 
     public function messages(){
         return [
-            'date.required' => '¡La fecha es obligatoria!',
-            'time.required' =>  '¡El tiempo es obligatorio!',
-            'date.regex' => '¡La fecha debe tener el formato de fecha!',
-            'time.regex' => '¡El tiempo debe tener el formato de HH:SS!',
-            'user_id.required' => '¡El id de usuario es obligatorio!',
             'admin_id.required' => '¡El id de administrador es obligatorio!',
-            'user_id.numeric' => '¡El id de usuario debe ser un numero!',
-            'admin_id.numeric' => '¡El id de administrador debe ser un numero!'
+            'admin_id.gt' => '¡El id de administrador debe ser un numero mayor que 0!',
         ];
     }
 
@@ -50,6 +41,5 @@ class AppointmentRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors()
         ], 422));
-
-}
+    }
 }

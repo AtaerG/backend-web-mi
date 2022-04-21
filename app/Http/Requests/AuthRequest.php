@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class PasswordRequest extends FormRequest
+class AuthRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,22 +18,24 @@ class PasswordRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
-            'email'=>'required|email',
+            'name' => 'required',
+            'surname' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8',
         ];
     }
 
     public function messages(){
         return [
-            'email.required' => '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
-            'email.email' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!'
+            'name.required' => '¡El nombre es obligatorio!',
+            'surname.required' => '¡Los apellidos son obligatorios!',
+            'email.required' => '¡El email es obligatorio!',
+            'email.email' => '¡El email debe tener formato de correo electronico!',
+            'password.required' => '¡La contraena es obligatoria!',
+            'password.min' => '¡La contraena debe tener al menos 8 digitos!',
         ];
     }
 
@@ -41,6 +43,5 @@ class PasswordRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors()
         ], 422));
-
     }
 }

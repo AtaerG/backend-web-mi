@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Mail\AppointmentAdminMail;
 use App\Mail\AppointmentuserMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\AppointmentRequest;
+use App\Http\Requests\AppointmentAdminRequest;
+use App\Http\Requests\AppointmentUserRequest;
 
 class AppointmentController extends Controller
 {
@@ -22,12 +24,12 @@ class AppointmentController extends Controller
         return response()->json($appointments, 200);
     }
 
-    public function getAdminsAppointments(Request $request){
+    public function getAdminsAppointments(AppointmentAdminRequest $request){
         $appointments = DB::select("SELECT appointments.*, users.name, users.surname FROM users INNER JOIN appointments ON users.id = appointments.admin_id WHERE admin_id = ".$request->get('admin_id'));
         return response()->json($appointments, 200);
     }
 
-    public function getUsersAppointments(Request $request){
+    public function getUsersAppointments(AppointmentUserRequest $request){
         $appointments = DB::select("SELECT appointments.*, users.name, users.surname FROM users INNER JOIN appointments ON users.id = appointments.user_id WHERE user_id = ".$request->get('user_id'));
         return response()->json($appointments, 200);
     }
@@ -38,7 +40,7 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AppointmentRequest $request)
     {
         $appointments = DB::select("SELECT * FROM appointments WHERE date = '".$request->get('date')."' AND time = '".$request->get('time')."'");
         if( $appointments != null){

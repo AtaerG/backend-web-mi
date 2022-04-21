@@ -27,26 +27,28 @@ class CommentRequest extends FormRequest
     {
         return [
             'content'=>'required',
-            'stars'=>'required|numeric|gte:0|lte:5',
+            'stars'=>'required|gte:0|lte:5',
             'user_id'=>'required|numeric',
             'product_id'=>'required|numeric',
-            'g-recaptcha-response' => 'required|recaptchav3:register,0.5'
         ];
     }
 
     public function messages(){
         return [
-            'content.required' => 'El contenido es obligatorio!',
-            'stars.required' => 'Cantidad de estrellas es obligatorio!',
-            'stars.gte' => 'La cantidad debe ser mayor o igual 0',
+            'content.required' => '¡El contenido es obligatorio!',
+            'stars.required' => '¡Cantidad de estrellas es obligatorio!',
+            'user_id.required' => '¡El id de usuario es obligatorio!',
+            'product_id.required' => '¡El id de producto es obligatorio!',
+            'user_id.numeric' => '¡El id de usuario debe ser un numero!',
+            'product_id.numeric' => '¡El id de producto debe ser un numero!',
+            'stars.gte' => '¡La cantidad debe ser mayor o igual 0!',
             'stars.lte' => 'La cantidad debe ser menor o igual que 5',
         ];
     }
 
     protected function failedValidation(Validator $validator){
         throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'status' => true
+            'errors' => $validator->errors()
         ], 422));
     }
 }

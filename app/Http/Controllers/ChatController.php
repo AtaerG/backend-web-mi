@@ -1,13 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Events\MessageSent;
-use App\Events\Messaging;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\MessageRequest;
 
 class ChatController extends Controller
 {
@@ -28,7 +25,7 @@ class ChatController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function sendMessage(Request $request)
+    public function sendMessage(MessageRequest $request)
     {
         //$user = User::where('id', $request->get('user_id'))->first();
         broadcast(new MessageSent($request->get('id'), $request->get('name'), $request->get('message')))->toOthers();

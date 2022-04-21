@@ -55,7 +55,7 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(CommentRequest $request, Comment $comment)
     {
         if (Gate::denies('update', $comment)) {
             abort(403);
