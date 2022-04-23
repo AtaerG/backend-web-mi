@@ -29,7 +29,7 @@ class OrderController extends Controller
             if (Gate::denies('show', $order)) {
                 continue;
             } else {
-                array_push($user_orders,$order);
+                array_push($user_orders, $order);
             }
         }
         return response()->json($user_orders, 200);
@@ -43,21 +43,25 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
-        $order  = new Order();
-        $order->total_price = $request->get('total_price');
-        $order->direction = $request->get('direction');
-        $order->post_code = $request->get('post_code');
-        $order->status = $request->get('status');
-        $order->city = $request->get('city');
-        $order->state = $request->get('state');
-        $order->country = $request->get('country');
-        $order->user()->associate(Auth::user()->id);
-        $order->save();
-        $array_prod_ids = explode(',',$request->get('products'));
-        $products = Product::find($array_prod_ids);
-        $order->products()->attach($products);
-        Mail::to("ataerg.web-designer@outlook.com")->send(new OrderCreatedMail($order));
-        return response()->json($order , 201);
+        if (Gate::denies('isAdmin')) {
+            $order  = new Order();
+            $order->total_price = $request->get('total_price');
+            $order->direction = $request->get('direction');
+            $order->post_code = $request->get('post_code');
+            $order->status = $request->get('status');
+            $order->city = $request->get('city');
+            $order->state = $request->get('state');
+            $order->country = $request->get('country');
+            $order->user()->associate(Auth::user()->id);
+            $order->save();
+            $array_prod_ids = explode(',', $request->get('products'));
+            $products = Product::find($array_prod_ids);
+            $order->products()->attach($products);
+            Mail::to("ataerg.web-designer@outlook.com")->send(new OrderCreatedMail($order));
+            return response()->json($order, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 
     /**
@@ -69,7 +73,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         if (Gate::denies('show', $order)) {
-            abort(403);
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
         $order_with_products = Order::where('id', '=', $order->id)->with('products')->first();
         return response()->json($order_with_products, 200);
@@ -84,17 +88,18 @@ class OrderController extends Controller
      */
     public function update(OrderRequest $request, Order $order)
     {
-        if (Gate::denies('update', $order)) {
-            abort(403);
+        if (Gate::allows('isAdmin')) {
+            $order->total_price = $request->get('total_price');
+            $order->state = $request->get('status');
+            if ($request->get('status') === "ended") {
+                Mail::to("ataerg.web-designer@outlook.com")->send(new ValorationMail($order, Auth::user()));
+            }
+            $order->paid = $request->get('paid');
+            $order->save();
+            return response()->json($order, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $order->total_price = $request->get('total_price');
-        $order->state = $request->get('status');
-        if($request->get('status')==="ended"){
-            Mail::to("ataerg.web-designer@outlook.com")->send(new ValorationMail($order, Auth::user()));
-        }
-        $order->paid = $request->get('paid');
-        $order->save();
-        return response()->json($order, 201);
     }
 
     /**
@@ -105,16 +110,22 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        if (Gate::denies('destroy', $order)) {
-            abort(403);
+        if (Gate::allows('isAdmin') || Gate::allows('isUsers', $order)) {
+            DB::delete("DELETE FROM order_product WHERE order_id = ?", [$order->id]);
+            $order->delete();
+            return response()->json(null, 204);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $order->delete();
-        return response()->json(null, 204);
     }
 
-    public function getOrdersOfUser(OrdersUserRequest $request){
-        $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
-        //$order_of_user_with_products = $order->where('id', '=', $order->id)->with('products')->first();
-        return response()->json($order, 200);
+    public function getOrdersOfUser(OrdersUserRequest $request)
+    {
+        if (Gate::allows('isAdmin')) {
+            $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
+            return response()->json($order, 200);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 }

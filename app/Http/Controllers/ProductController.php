@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -27,16 +28,20 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $product = new Product();
-        $product->name = $request->get('name');
-        $product->price = $request->get('price');
-        $product->description = $request->get('description');
-        $product->amount = $request->get('amount');
-        $product->image_url = $request->get('image_url');
-        $product->price_descount = $request->get('price_descount');
-        $product->tag = $request->get('tag');
-        $product->save();
-        return response()->json($product, 201);
+        if (Gate::allows('isAdmin')) {
+            $product = new Product();
+            $product->name = $request->get('name');
+            $product->price = $request->get('price');
+            $product->description = $request->get('description');
+            $product->amount = $request->get('amount');
+            $product->image_url = $request->get('image_url');
+            $product->price_descount = $request->get('price_descount');
+            $product->tag = $request->get('tag');
+            $product->save();
+            return response()->json($product, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 
     /**
@@ -48,7 +53,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $comments_with_names = DB::select("SELECT comments.*, users.name, users.surname FROM users INNER JOIN comments ON users.id = comments.user_id");
-        return response()->json(['product'=>$product, 'comments'=>$comments_with_names], 200);
+        return response()->json(['product' => $product, 'comments' => $comments_with_names], 200);
     }
 
     /**
@@ -60,14 +65,18 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $product->name = $request->get('name');
-        $product->price = $request->get('price');
-        $product->description = $request->get('description');
-        $product->amount = $request->get('amount');
-        $product->image_url = $request->get('image_url');
-        $product->tag = $request->get('tag');
-        $product->save();
-        return response()->json($product,200);
+        if (Gate::allows('isAdmin')) {
+            $product->name = $request->get('name');
+            $product->price = $request->get('price');
+            $product->description = $request->get('description');
+            $product->amount = $request->get('amount');
+            $product->image_url = $request->get('image_url');
+            $product->tag = $request->get('tag');
+            $product->save();
+            return response()->json($product, 200);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
     /**
      * Remove the specified resource from storage.
@@ -77,7 +86,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
-        return response()->json(null, 204);
+        if (Gate::allows('isAdmin')) {
+            $product->delete();
+            return response()->json(null, 204);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 }

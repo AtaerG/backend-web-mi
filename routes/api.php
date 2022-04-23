@@ -27,7 +27,6 @@ Route::post('login', [PassportAuthController::class, 'login']);
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
     Route::get('products/{product}', 'show');
-    Route::put('products/{product}', 'update');
 });
 
 Route::controller(CommentController::class)->group(function () {
@@ -46,6 +45,7 @@ Route::middleware('auth:api','role')->group(function () {
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
+            Route::put('products/{product}', 'update');
             Route::delete('products/{product}', 'destroy');
         });
     });
@@ -64,11 +64,12 @@ Route::middleware('auth:api','role')->group(function () {
         Route::get('orders/{order}', 'show');
         Route::post('orders/user', 'getOrdersOfUser');
         Route::put('orders/{order}', 'update');
-        Route::delete('orders/{orders}', 'destroy');
+        Route::delete('orders/{order}', 'destroy');
     });
     Route::controller(AppointmentController::class)->group(function () {
         Route::get('appointments', 'index');
         Route::post('appointments', 'store');
+        Route::delete('appointments/{appointment}', 'destroy');
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
     });

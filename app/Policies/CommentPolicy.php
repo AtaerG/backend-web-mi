@@ -21,18 +21,18 @@ class CommentPolicy
         //
     }
 
+    public function store(User $user)
+    {
+        return $user->role === 'normal_user';
+    }
+
     public function update(User $user, Comment $comment)
     {
-        return ($user->id === $comment->user_id) ?
-        Response::allow()
-        : Response::deny('No tiene permisos para modificar commentario');
+        return ($user->id === $comment->user_id);
     }
 
     public function destroy(User $user, Comment $comment)
     {
-        //
-        return ($user->id === $comment->user_id || $user->role === 'admin')?
-        Response::allow()
-        : Response::deny('No tiene permisos para eliminar commentario');
+        return ($user->id === $comment->user_id || $user->role === 'admin');
     }
 }

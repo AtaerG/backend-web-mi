@@ -5,7 +5,10 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use App\Policies\CommentPolicy;
+use App\Policies\UserPolicy;
 use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -39,6 +42,18 @@ class AuthServiceProvider extends ServiceProvider
         Passport::setDefaultScope([
             'basic'
         ]);
+
+        Gate::define('isAdmin', function($user) {
+            return $user->role == 'admin';
+        });
+
+        Gate::define('isNormalUser', function($user) {
+            return $user->role == 'normal_user';
+        });
+
+        Gate::define('isUsers', function(User $user,$item) {
+            return $item->user_id == $user->id;
+        });
 
         $this->registerPolicies($gate);
     }
