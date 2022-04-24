@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 use App\Models\Comment;
-use Illuminate\Http\Request;
 use App\Http\Requests\CommentRequest;
+use App\Models\User;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $comment = Comment::get();
-        return response()->json($comment, 200);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -28,24 +18,17 @@ class CommentController extends Controller
      */
     public function store(CommentRequest $request)
     {
-        $comment = new Comment();
-        $comment->content = $request->get('content');
-        $comment->stars = $request->get('stars');
-        $comment->user()->associate($request->get('user_id'));
-        $comment->product()->associate($request->get('product_id'));
-        $comment->save();
-        return response()->json($comment, 201);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Comment $comment)
-    {
-        return response()->json($comment, 200);
+        if (Gate::denies('isAdmin')) {
+            $comment = new Comment();
+            $comment->content = $request->get('content');
+            $comment->stars = $request->get('stars');
+            $comment->user()->associate($request->get('user_id'));
+            $comment->product()->associate($request->get('product_id'));
+            $comment->save();
+            return response()->json($comment, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 
     /**
@@ -55,15 +38,16 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(CommentRequest $request, Comment $comment)
     {
-        if (Gate::denies('update', $comment)) {
-            abort(403);
+        if (!Gate::allows('isUsers', $comment)) {
+            $comment->stars = $request->get('stars');
+            $comment->content = $request->get('content');
+            $comment->save();
+            return response()->json($comment, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $comment->stars = $request->get('stars');
-        $comment->content = $request->get('content');
-        $comment->save();
-        return response()->json($comment, 201);
     }
 
     /**
@@ -74,10 +58,11 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        if (Gate::denies('update', $comment)) {
-            abort(403);
-        }
+        if (Gate::allows('isUsers', $comment) || Gate::allows('isAdmin')) {
             $comment->delete();
             return response()->json(null, 204);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 }

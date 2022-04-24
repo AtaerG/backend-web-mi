@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -16,11 +17,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('index', Auth::user())) {
-            abort(403);
+        if (Gate::allows('isAdmin')) {
+            $users = User::get();
+            return response()->json($users, 200);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $users = User::get();
-        return response()->json($users, 200);
     }
 
     public function getAdmins()
@@ -42,7 +44,7 @@ class UserController extends Controller
         if ($user->can('show', $user)) {
             return response()->json($user, 200);
         } else {
-            return response()->json(['error'=>'No tiene permimsos para ver usuario'], 403);
+            return response()->json(['error' => 'No tiene permimsos para ver usuario'], 403);
         }
     }
 
@@ -53,19 +55,18 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
         if ($user->can('update', $user)) {
             $user->name = $request->get('name');
             $user->surname = $request->get('surname');
-            $user->password = bcrypt($request->get('password'));
+            $user->email = $request->get('email');
             $user->role = $request->get('role');
             $user->save();
             return response()->json($user, 201);
         } else {
-            return response()->json(['error'=>'No tiene permimsos para modificar usuario'], 403);
+            return response()->json(['error' => 'No tiene permimsos para modificar usuario'], 403);
         }
-
     }
 
     /**
@@ -77,14 +78,16 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ($user->can('destroy', $user)) {
+            DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
             $user->delete();
             return response()->json(null, 204);
         } else {
-            return response()->json(['error'=> 'No tiene permisos para eliminar usuario'], 403);
+            return response()->json(['error' => 'No tiene permisos para eliminar usuario'], 403);
         }
     }
 
-    public function getOnlyAdminsIdForChatting(){
+    public function getOnlyAdminsIdForChatting()
+    {
         $users = User::get();
         $names = $users->map->only(['name']);
         return response()->json($names, 200);

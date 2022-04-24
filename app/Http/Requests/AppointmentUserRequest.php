@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class ProductRequest extends FormRequest
+class AppointmentUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,25 +26,14 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-        'name'=>'required',
-        'amount'=>'required|gte:0',
-        'price'=>'required|gt:0',
-        'description'=>'required',
-        'image_url'=>'required',
-        'tag'=>'required'
+            'user_id' => 'required|gt:0',
         ];
     }
 
     public function messages(){
         return [
-            'name.required' => '¡El nombre es obligatorio!',
-            'amount.required' =>  '¡La cantidad es obligatoria!',
-            'price.required' =>  '¡El precio es obligatorio!',
-            'amount.gte' => '¡La cantidad debe ser mayor o igual que 0!',
-            'price.gt' => '¡El precio debe ser mayor que 0!',
-            'description.required' => '¡La descripcion es obligatoria!',
-            'image_url.required' => '¡La imagen es obligatoria!',
-            'tag.required' => '¡El tag es obligatorio!'
+            'admin_id.required' => '¡El id de usuario es obligatorio!',
+            'admin_id.gt' => '¡El id de usuario debe ser un numero mayor que 0!',
         ];
     }
 

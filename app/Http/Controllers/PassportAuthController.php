@@ -6,20 +6,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\UserCreatedMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\AuthRequest;
+use App\Http\Requests\LoginRequest;
 
 class PassportAuthController extends Controller{
     /**
      * Registration
      */
-    public function register(Request $request)
+    public function register(AuthRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|max:20',
-            'surname' => 'required|max:50',
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -36,37 +31,36 @@ class PassportAuthController extends Controller{
     /**
      * Login
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required'
-        ]);
+        try{
+            if( Auth::attempt(['email'=>$request->email, 'password'=>$request->password]) ) {
 
-        if( Auth::attempt(['email'=>$request->email, 'password'=>$request->password]) ) {
+                $user = Auth::user();
+                $userRole = $user->role;
 
-            $user = Auth::user();
-            $userRole = $user->role;
+                if ($userRole) {
+                    $this->scope = $userRole;
+                }
 
-            if ($userRole) {
-                $this->scope = $userRole;
+                $token = $user->createToken('MIWEB', [$this->scope]);
+
+                return response()->json(
+                [
+                    'token' => $token,
+                    'user_role' => $token->token->scopes[0],
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->name,
+                ]);
+            } else {
+                $user = Auth::user();
+                if($user->email === $request->email){
+                    return response()->json(['error' => 'Error en contraseña!'], 403);
+                }
             }
-
-            $token = $user->createToken('MIWEB', [$this->scope]);
-
-            return response()->json(
-            [
-                'token' => $token,
-                'user_role' => $token->token->scopes[0],
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'name' => $user->name,
-            ]);
-        } else {
-            $user = Auth::user();
-            if($user->email === $request->email){
-                return response()->json(['error' => 'Error en contraseña!'], 403);
-            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error!'], 500);
         }
     }
     public function logout()

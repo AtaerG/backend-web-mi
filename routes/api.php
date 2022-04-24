@@ -24,13 +24,9 @@ use App\Http\Controllers\GoogleV3CaptchaController;
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
 
-Route::get('google-v3-recaptcha', [GoogleV3CaptchaController::class, 'index']);
-Route::post('validate-g-recaptcha', [GoogleV3CaptchaController::class, 'validateGCaptch']);
-
 Route::controller(ProductController::class)->group(function () {
     Route::get('products', 'index');
     Route::get('products/{product}', 'show');
-    Route::put('products/{product}', 'update');
 });
 
 Route::controller(CommentController::class)->group(function () {
@@ -38,13 +34,14 @@ Route::controller(CommentController::class)->group(function () {
     Route::get('comments/{comment}', 'show');
 });
 
-Route::post('messages', [ChatController::class, 'sendMessage']);
 
 Route::middleware('auth:api','role')->group(function () {
-
-
     Route::post('password/forgot', [PasswordController::class, 'forgot']);
     Route::post('password/reset', [PasswordController::class, 'reset']);
+
+    Route::post('messages', [ChatController::class, 'sendMessage']);
+
+    Route::put('products/{product}', [ProductController::class, 'update']);
 
     Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
@@ -52,18 +49,8 @@ Route::middleware('auth:api','role')->group(function () {
             Route::post('products', 'store');
             Route::delete('products/{product}', 'destroy');
         });
-        /*
-        Route::controller(UserController::class)->group(function () {
-            Route::get('users', 'index');
-            Route::post('products', 'store');
-            Route::put('products/{product}', 'update');
-            Route::delete('products/{product}', 'destroy');
-        });*/
     });
     Route::get('users/admins', [UserController::class, 'getOnlyAdminsIdForChatting']);
-    Route::middleware(['scope:normal_user'])->group(function () {
-       // Route::post('messages', [ChatController::class, 'sendMessage']);
-    });
     Route::controller(CommentController::class)->group(function () {
         Route::post('comments', 'store');
         Route::put('comments/{comment}', 'update');
@@ -78,11 +65,12 @@ Route::middleware('auth:api','role')->group(function () {
         Route::get('orders/{order}', 'show');
         Route::post('orders/user', 'getOrdersOfUser');
         Route::put('orders/{order}', 'update');
-        Route::delete('orders/{orders}', 'destroy');
+        Route::delete('orders/{order}', 'destroy');
     });
     Route::controller(AppointmentController::class)->group(function () {
         Route::get('appointments', 'index');
         Route::post('appointments', 'store');
+        Route::delete('appointments/{appointment}', 'destroy');
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
     });
