@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\OrdersUserRequest;
+use App\Http\Requests\OrderUpdateRequest;
 
 class OrderController extends Controller
 {
@@ -86,20 +87,14 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(OrderRequest $request, Order $order)
+    public function update(OrderUpdateRequest $request, Order $order)
     {
-        if (Gate::allows('isAdmin')) {
-            $order->total_price = $request->get('total_price');
-            $order->state = $request->get('status');
+            $order->status = $request->get('status');
             if ($request->get('status') === "ended") {
                 Mail::to("ataerg.web-designer@outlook.com")->send(new ValorationMail($order, Auth::user()));
             }
-            $order->paid = $request->get('paid');
             $order->save();
             return response()->json($order, 201);
-        } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
-        }
     }
 
     /**

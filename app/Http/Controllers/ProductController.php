@@ -65,7 +65,6 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        if (Gate::allows('isAdmin')) {
             $product->name = $request->get('name');
             $product->price = $request->get('price');
             $product->description = $request->get('description');
@@ -74,9 +73,6 @@ class ProductController extends Controller
             $product->tag = $request->get('tag');
             $product->save();
             return response()->json($product, 200);
-        } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
-        }
     }
     /**
      * Remove the specified resource from storage.

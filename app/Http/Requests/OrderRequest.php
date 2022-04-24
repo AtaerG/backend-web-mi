@@ -21,6 +21,7 @@ class OrderRequest extends FormRequest
     public function rules()
     {
         return [
+            'products'=>'required',
             'total_price'=>'required|gt:0',
             'status'=>'required|in:paid,ended',
             'direction'=>'required',
@@ -33,6 +34,7 @@ class OrderRequest extends FormRequest
 
     public function messages(){
         return [
+            'products'=>'¡Los productos del pedido son obligatorios!',
             'total_price.required' => '¡El precio total del pedido es obligatorio!',
             'status.required' => '¡El estado del pedido es obligatorio!',
             'status.in' => '¡El estado del pedido debe ser uno de los siguientes: paid, ended!',

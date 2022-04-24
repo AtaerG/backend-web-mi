@@ -40,11 +40,6 @@ class CommentController extends Controller
      */
     public function update(CommentRequest $request, Comment $comment)
     {
-        /*
-        if ($request->user()->can('update', $request->user())) {
-            return response()->json(['error' => 'No tiene permimsos para crear comentario'], 403);
-        }
-        */
         if (!Gate::allows('isUsers', $comment)) {
             $comment->stars = $request->get('stars');
             $comment->content = $request->get('content');
@@ -63,7 +58,7 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        if (!Gate::allows('isUsers', $comment) || Gate::allows('isAdmin')) {
+        if (Gate::allows('isUsers', $comment) || Gate::allows('isAdmin')) {
             $comment->delete();
             return response()->json(null, 204);
         } else {

@@ -41,11 +41,12 @@ Route::middleware('auth:api','role')->group(function () {
 
     Route::post('messages', [ChatController::class, 'sendMessage']);
 
+    Route::put('products/{product}', [ProductController::class, 'update']);
+
     Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
-            Route::put('products/{product}', 'update');
             Route::delete('products/{product}', 'destroy');
         });
     });
