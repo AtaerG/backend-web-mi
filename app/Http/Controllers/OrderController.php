@@ -116,11 +116,7 @@ class OrderController extends Controller
 
     public function getOrdersOfUser(OrdersUserRequest $request)
     {
-        if (Gate::allows('isAdmin')) {
             $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
             return response()->json($order, 200);
-        } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
-        }
     }
 }

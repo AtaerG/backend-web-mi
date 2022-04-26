@@ -35,13 +35,16 @@ Route::controller(CommentController::class)->group(function () {
 });
 
 
+Route::controller(ProductController::class)->group(function () {
+    Route::put('products/{product}', 'update');
+    Route::get('products/amount/{product}', 'getAmountOfProduct');
+});
+
 Route::middleware('auth:api','role')->group(function () {
     Route::post('password/forgot', [PasswordController::class, 'forgot']);
     Route::post('password/reset', [PasswordController::class, 'reset']);
 
     Route::post('messages', [ChatController::class, 'sendMessage']);
-
-    Route::put('products/{product}', [ProductController::class, 'update']);
 
     Route::get('logout', [PassportAuthController::class, 'logout']);
     Route::middleware(['scope:admin'])->group(function () {
@@ -62,8 +65,8 @@ Route::middleware('auth:api','role')->group(function () {
     Route::controller(OrderController::class)->group(function () {
         Route::get('orders', 'index');
         Route::post('orders', 'store');
-        Route::get('orders/{order}', 'show');
         Route::post('orders/user', 'getOrdersOfUser');
+        Route::get('orders/{order}', 'show');
         Route::put('orders/{order}', 'update');
         Route::delete('orders/{order}', 'destroy');
     });
