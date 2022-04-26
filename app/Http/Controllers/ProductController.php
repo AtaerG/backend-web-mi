@@ -52,8 +52,9 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        $product_amount = DB::select("SELECT amount FROM products WHERE id = ".$product->id);
         $comments_with_names = DB::select("SELECT comments.*, users.name, users.surname FROM users INNER JOIN comments ON users.id = comments.user_id");
-        return response()->json(['product' => $product, 'comments' => $comments_with_names], 200);
+        return response()->json(['product' => $product, 'comments' => $comments_with_names, 'amount'=> $product_amount], 200);
     }
 
     /**
@@ -74,6 +75,7 @@ class ProductController extends Controller
             $product->save();
             return response()->json($product, 200);
     }
+
     /**
      * Remove the specified resource from storage.
      *
