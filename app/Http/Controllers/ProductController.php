@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
+use App\Http\Requests\ProductsVisibilityRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -37,6 +38,7 @@ class ProductController extends Controller
             $product->image_url = $request->get('image_url');
             $product->price_descount = $request->get('price_descount');
             $product->tag = $request->get('tag');
+            $product->visible = $request->get('visible');
             $product->save();
             return response()->json($product, 201);
         } else {
@@ -72,6 +74,7 @@ class ProductController extends Controller
             $product->amount = $request->get('amount');
             $product->image_url = $request->get('image_url');
             $product->tag = $request->get('tag');
+            $product->visible = $request->get('visible');
             $product->save();
             return response()->json($product, 200);
     }
@@ -82,13 +85,10 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function deleteProduct(ProductsVisibilityRequest $request, Product $product)
     {
-        if (Gate::allows('isAdmin')) {
-            $product->delete();
-            return response()->json(null, 204);
-        } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
-        }
+        $product->visible = $request->get('visible');
+        $product->save();
+        return response()->json($product, 200);
     }
 }

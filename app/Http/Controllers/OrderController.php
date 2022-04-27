@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Mail\OrderCreatedMail;
 use App\Mail\ValorationMail;
+use App\Mail\OrderDeletedMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
@@ -58,7 +59,8 @@ class OrderController extends Controller
             $array_prod_ids = explode(',', $request->get('products'));
             $products = Product::find($array_prod_ids);
             $order->products()->attach($products);
-            Mail::to("ataerg.web-designer@outlook.com")->send(new OrderCreatedMail($order));
+            $user = $order->user()->first();
+            Mail::to($user->email)->send(new OrderCreatedMail($order));
             return response()->json($order, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
@@ -89,9 +91,10 @@ class OrderController extends Controller
      */
     public function update(OrderUpdateRequest $request, Order $order)
     {
+            $user = $order->user()->first();
             $order->status = $request->get('status');
             if ($request->get('status') === "ended") {
-                Mail::to("ataerg.web-designer@outlook.com")->send(new ValorationMail($order, Auth::user()));
+                Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
             }
             $order->save();
             return response()->json($order, 201);
@@ -106,7 +109,9 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         if (Gate::allows('isAdmin') || Gate::allows('isUsers', $order)) {
+            $user = $order->user()->first();
             DB::delete("DELETE FROM order_product WHERE order_id = ?", [$order->id]);
+            Mail::to($user->email)->send(new OrderDeletedMail($order));
             $order->delete();
             return response()->json(null, 204);
         } else {

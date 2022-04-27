@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Mail\AppointmentAdminMail;
 use App\Mail\AppointmentuserMail;
+use App\Mail\AppointmentDeletedMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AppointmentRequest;
@@ -69,8 +70,10 @@ class AppointmentController extends Controller
             $appointment->date = $request->get('date');
             $appointment->time = $request->get('time');
             $appointment->save();
-            Mail::to("ataerg.web-designer@outlook.com")->send(new AppointmentAdminMail($appointment));
-            Mail::to("ataerg.web-designer@outlook.com")->send(new AppointmentUserMail($appointment));
+            $user = DB::select("SELECT email FROM users WHERE id = " . $request->get('user_id'));
+            $admin = DB::select("SELECT email FROM users WHERE id = " . $request->get('admin_id'));
+            Mail::to($admin[0]->email)->send(new AppointmentAdminMail($appointment));
+            Mail::to($user[0]->email)->send(new AppointmentUserMail($appointment));
             return response()->json($appointment, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
@@ -87,6 +90,8 @@ class AppointmentController extends Controller
     {
         if (Gate::allows('isAdmin') || Gate::allows('isUsers', $appointment)) {
             $appointment->delete();
+            $user = DB::select("SELECT email FROM users WHERE id = " . $appointment->user_id);
+            Mail::to($user[0]->email)->send(new AppointmentDeletedMail($appointment));
             return response()->json(null, 204);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);

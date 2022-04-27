@@ -24,7 +24,7 @@ class PassportAuthController extends Controller{
         ]);
 
         $token = $user->createToken('miauth')->accessToken;
-        Mail::to("ataerg.web-designer@outlook.com")->send(new UserCreatedMail($user));
+        Mail::to($user->email)->send(new UserCreatedMail($user));
         return response()->json(['token' => $token], 200);
     }
 

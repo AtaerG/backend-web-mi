@@ -26,7 +26,7 @@ date_default_timezone_set('Europe/Madrid');
     <div class="">
       <h3 class="">Pedido № {{$order->id}}</h3>
       <p class="">Precio total del pedido: {{$order->total_price}}€ </p>
-      <a href="#" class="button">MAS INFORMACION</a>
+      <a href="http://mi.es/orders/{{$order->id}}" class="button">MAS INFORMACION</a>
       <p style="margin-top: 1rem;">Por favor, guarda el numero del pedido</p>
     </div>
     <div style="margin-top: 2rem;">Fecha de procesamiento del pedido: {{date('d-m-y h:i:s')}}</div>

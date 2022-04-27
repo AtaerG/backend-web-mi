@@ -22,7 +22,8 @@ date_default_timezone_set('Europe/Madrid');
 </style>
 <div class="container centered" style="padding: 2rem; background: #f5f5f5;">
     <h1 class="gradient ">MUEBLES INTELIGENTES</h1>
-    <div class="">¡{{$user->name}}, usted ya recibido su pedido!</div>
-    <p>Por favor, revisa  y valora cada producto de tu pedido</p>
-    <a href="#" class="button">Hazlo pinchado aqui</a>
+    <div class="">
+      <h3 class="">Pedido № {{$order->id}} se ha eliminado</h3>
+    </div>
+    <div style="margin-top: 2rem;">Fecha de eliminacion del pedido: {{date('d-m-y h:i:s')}}</div>
 </div>

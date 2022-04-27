@@ -50,7 +50,7 @@ Route::middleware('auth:api','role')->group(function () {
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
-            Route::delete('products/{product}', 'destroy');
+            Route::patch('products/{product}', 'deleteProduct');
         });
     });
     Route::get('users/admins', [UserController::class, 'getOnlyAdminsIdForChatting']);
