@@ -27,7 +27,7 @@ class CommentRequest extends FormRequest
     {
         return [
             'content'=>'required',
-            'stars'=>'required|gte:0|lte:5',
+            'valoration'=>'required|gte:0|lte:5',
             'user_id'=>'required|numeric',
             'product_id'=>'required|numeric',
         ];
@@ -36,13 +36,13 @@ class CommentRequest extends FormRequest
     public function messages(){
         return [
             'content.required' => '¡El contenido es obligatorio!',
-            'stars.required' => '¡Cantidad de estrellas es obligatorio!',
+            'valoration.required' => '¡Cantidad de estrellas es obligatorio!',
             'user_id.required' => '¡El id de usuario es obligatorio!',
             'product_id.required' => '¡El id de producto es obligatorio!',
             'user_id.numeric' => '¡El id de usuario debe ser un numero!',
             'product_id.numeric' => '¡El id de producto debe ser un numero!',
-            'stars.gte' => '¡La cantidad debe ser mayor o igual 0!',
-            'stars.lte' => 'La cantidad debe ser menor o igual que 5',
+            'valoration.gte' => '¡La cantidad debe ser mayor o igual 0!',
+            'valoration.lte' => 'La cantidad debe ser menor o igual que 5',
         ];
     }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->binary('image_url');
             $table->string('tag');
+            $table->string('visible');
             $table->float('price_descount')->nullable();
             $table->timestamps();
         });

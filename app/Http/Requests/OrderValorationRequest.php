@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class OrderUpdateRequest extends FormRequest
+class OrderValorationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,25 +18,22 @@ class OrderUpdateRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
-            'direction'=>'required',
-            'post_code'=>'required|numeric',
-            'city'=>'required',
-            'state'=>'required',
-            'country'=>'required',
+            'valoration'=>'required|gte:0',
         ];
     }
 
     public function messages(){
         return [
-            'direction' => '¡La direccion es obligatoria!',
-            'post_code.required' => '¡El codigo postal es obligatorio!',
-            'post_code.numeric' => '¡El codigo postal debe ser numerico!',
-            'city.required' => '¡La ciudad es obligatoria!',
-            'state.required' => '¡La provincia es obligatoria!',
-            'country.required' => '¡El pais es obligatorio!',
+            'valoration.required' => '¡La valoracion del pedido es obligatorio!',
+            'valoration.gte' => '¡La valoracion del pedido debe ser mayor o igual que 0!',
         ];
     }
 

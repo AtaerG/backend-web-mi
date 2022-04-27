@@ -22,6 +22,7 @@ use App\Http\Controllers\GoogleV3CaptchaController;
 |
 */
 Route::post('register', [PassportAuthController::class, 'register']);
+
 Route::post('login', [PassportAuthController::class, 'login']);
 
 Route::controller(ProductController::class)->group(function () {
@@ -41,35 +42,45 @@ Route::controller(ProductController::class)->group(function () {
 });
 
 Route::middleware('auth:api','role')->group(function () {
+
     Route::post('password/forgot', [PasswordController::class, 'forgot']);
+
     Route::post('password/reset', [PasswordController::class, 'reset']);
 
     Route::post('messages', [ChatController::class, 'sendMessage']);
 
     Route::get('logout', [PassportAuthController::class, 'logout']);
+
     Route::middleware(['scope:admin'])->group(function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('products', 'store');
-            Route::delete('products/{product}', 'destroy');
+            Route::patch('products/{product}', 'deleteProduct');
         });
     });
+
     Route::get('users/admins', [UserController::class, 'getOnlyAdminsIdForChatting']);
+
     Route::controller(CommentController::class)->group(function () {
         Route::post('comments', 'store');
         Route::put('comments/{comment}', 'update');
         Route::delete('comments/{comment}', 'destroy');
     });
+
     Route::controller(UserController::class)->group(function () {
         Route::get('users-admins', 'getAdmins');
     });
+
     Route::controller(OrderController::class)->group(function () {
         Route::get('orders', 'index');
         Route::post('orders', 'store');
         Route::post('orders/user', 'getOrdersOfUser');
         Route::get('orders/{order}', 'show');
+        Route::patch('status/orders/{order}', 'orderStatus');
         Route::put('orders/{order}', 'update');
+        Route::patch('valoration/orders/{order}', 'orderValoration');
         Route::delete('orders/{order}', 'destroy');
     });
+
     Route::controller(AppointmentController::class)->group(function () {
         Route::get('appointments', 'index');
         Route::post('appointments', 'store');
@@ -77,6 +88,7 @@ Route::middleware('auth:api','role')->group(function () {
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
     });
+
     Route::apiResource('users', UserController::class);
 });
 

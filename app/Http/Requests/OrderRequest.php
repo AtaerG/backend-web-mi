@@ -23,7 +23,7 @@ class OrderRequest extends FormRequest
         return [
             'products'=>'required',
             'total_price'=>'required|gt:0',
-            'status'=>'required|in:paid,ended',
+            'status'=>'required|in:pagado,terminado',
             'direction'=>'required',
             'post_code'=>'required|numeric',
             'city'=>'required',
@@ -34,10 +34,10 @@ class OrderRequest extends FormRequest
 
     public function messages(){
         return [
-            'products'=>'¡Los productos del pedido son obligatorios!',
+            'products.required'=>'¡Los productos del pedido son obligatorios!',
             'total_price.required' => '¡El precio total del pedido es obligatorio!',
             'status.required' => '¡El estado del pedido es obligatorio!',
-            'status.in' => '¡El estado del pedido debe ser uno de los siguientes: paid, ended!',
+            'status.in' => '¡El estado del pedido debe ser uno de los siguientes: pagado, terminado!',
             'direction' => '¡La direccion es obligatoria!',
             'total_price.gt' => '¡El precio total debe ser mayor que 0!',
             'post_code.required' => '¡El codigo postal es obligatorio!',
