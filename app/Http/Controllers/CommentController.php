@@ -21,7 +21,7 @@ class CommentController extends Controller
         if (Gate::denies('isAdmin')) {
             $comment = new Comment();
             $comment->content = $request->get('content');
-            $comment->stars = $request->get('stars');
+            $comment->valoration = $request->get('valoration');
             $comment->user()->associate($request->get('user_id'));
             $comment->product()->associate($request->get('product_id'));
             $comment->save();
@@ -41,7 +41,7 @@ class CommentController extends Controller
     public function update(CommentRequest $request, Comment $comment)
     {
         if (!Gate::allows('isUsers', $comment)) {
-            $comment->stars = $request->get('stars');
+            $comment->valoration = $request->get('valoration');
             $comment->content = $request->get('content');
             $comment->save();
             return response()->json($comment, 201);

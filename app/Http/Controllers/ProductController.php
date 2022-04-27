@@ -55,8 +55,8 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product_amount = DB::select("SELECT amount FROM products WHERE id = ".$product->id);
-        $comments_with_names = DB::select("SELECT comments.*, users.name, users.surname FROM users INNER JOIN comments ON users.id = comments.user_id");
-        return response()->json(['product' => $product, 'comments' => $comments_with_names, 'amount'=> $product_amount], 200);
+        $cmnt_products_with_orders_and_names = DB::select("SELECT comments.*, users.name, users.surname, orders.valoration as valoration_order, country FROM orders INNER JOIN comments ON orders.user_id = comments.user_id INNER JOIN users ON users.id = comments.user_id INNER JOIN order_product ON orders.id = order_product.order_id   INNER JOIN products ON  products.id = order_product.product_id");
+        return response()->json(['product' => $product, 'comments' => $cmnt_products_with_orders_and_names , 'amount'=> $product_amount], 200);
     }
 
     /**

@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\OrdersUserRequest;
+use App\Http\Requests\OrderStatusRequest;
 use App\Http\Requests\OrderUpdateRequest;
+use App\Http\Requests\OrderValorationRequest;
+use App\Mail\OrderChangedMail;
 
 class OrderController extends Controller
 {
@@ -91,13 +94,45 @@ class OrderController extends Controller
      */
     public function update(OrderUpdateRequest $request, Order $order)
     {
-            $user = $order->user()->first();
-            $order->status = $request->get('status');
-            if ($request->get('status') === "ended") {
-                Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
-            }
+        if (Gate::denies('isAdmin')) {
+            $order->direction = $request->get('direction');
+            $order->post_code = $request->get('post_code');
+            $order->city = $request->get('city');
+            $order->state = $request->get('state');
+            $order->country = $request->get('country');
             $order->save();
+            $user = $order->user()->first();
+            Mail::to($user->email)->send(new OrderChangedMail($order));
             return response()->json($order, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
+    }
+
+    public function orderStatus(OrderStatusRequest  $request, Order $order)
+    {
+        $user = $order->user()->first();
+        $order->status = $request->get('status');
+        if ($request->get('status') === "ended") {
+            Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
+        }
+        $order->save();
+        return response()->json($order, 201);
+    }
+
+    public function orderValoration(OrderValorationRequest $request, Order $order)
+    {
+        if (Gate::denies('isAdmin')) {
+            if ($order->status != 'ended') {
+                $order->valoration = $request->get('valoration');
+                $order->save();
+                return response()->json($order, 201);
+            } else {
+                return response()->json(['error' => 'No puede valorar un pedido que no ha finalizado'], 401);
+            }
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 
     /**
@@ -121,7 +156,7 @@ class OrderController extends Controller
 
     public function getOrdersOfUser(OrdersUserRequest $request)
     {
-            $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
-            return response()->json($order, 200);
+        $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
+        return response()->json($order, 200);
     }
 }
