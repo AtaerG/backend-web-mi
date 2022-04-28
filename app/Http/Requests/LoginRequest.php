@@ -22,7 +22,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'password' => 'required|min:8'
+            'password' => 'required|min:8',
+            'token_recapV3' => 'required|string',
         ];
     }
 
@@ -31,7 +32,8 @@ class LoginRequest extends FormRequest
             'email.required' => '¡El email es obligatorio!',
             'email.email' => '¡El email debe tener formato de correo electronico!',
             'password.required' => '¡La contraena es obligatoria!',
-            'password.min' => '¡La contrasena debe tener al menos 8 digitos!'
+            'password.min' => '¡La contrasena debe tener al menos 8 digitos!',
+            'token_recapV3.required' => '¡El token es obligatorio!',
         ];
     }
 

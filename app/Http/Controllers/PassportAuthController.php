@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -9,7 +10,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\LoginRequest;
 
-class PassportAuthController extends Controller{
+class PassportAuthController extends Controller
+{
     /**
      * Registration
      */
@@ -33,8 +35,25 @@ class PassportAuthController extends Controller{
      */
     public function login(LoginRequest $request)
     {
-        try{
-            if( Auth::attempt(['email'=>$request->email, 'password'=>$request->password]) ) {
+        try {
+            $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
+            $url = 'https://www.google.com/recaptcha/api/siteverify';
+            $data = array('secret' => env('RECAPTCHAV3_SECRET'), 'response' => $token_recapV3);
+            $options = array(
+                'http' => array(
+                    'method'  => 'POST',
+                    'header'  => array('Content-type: application/x-www-form-urlencoded'),
+                    'content' => http_build_query($data)
+                )
+            );
+            $context = stream_context_create($options);
+            $result = json_decode(file_get_contents($url, false, $context));
+
+            if ($result->success === FALSE) {
+                return response()->json(['error' => 'Error! Eres robot!'], 504);
+            }
+
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
                 $user = Auth::user();
                 $userRole = $user->role;
@@ -46,16 +65,17 @@ class PassportAuthController extends Controller{
                 $token = $user->createToken('MIWEB', [$this->scope]);
 
                 return response()->json(
-                [
-                    'token' => $token,
-                    'user_role' => $token->token->scopes[0],
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'name' => $user->name,
-                ]);
+                    [
+                        'token' => $token,
+                        'user_role' => $token->token->scopes[0],
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'name' => $user->name,
+                    ]
+                );
             } else {
                 $user = Auth::user();
-                if($user->email === $request->email){
+                if ($user->email === $request->email) {
                     return response()->json(['error' => 'Error en contraseña!'], 403);
                 }
             }
