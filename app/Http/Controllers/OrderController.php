@@ -59,11 +59,14 @@ class OrderController extends Controller
             $order->country = $request->get('country');
             $order->user()->associate(Auth::user()->id);
             $order->save();
-            $array_prod_ids = explode(',', $request->get('products'));
-            $products = Product::find($array_prod_ids);
-            $order->products()->attach($products);
+            //pass array of products to array
+            foreach (json_decode(json_decode($request->get('products'))) as $product) {
+                DB::table('order_product')->insert(
+                    ['product_id' => $product->product->id, 'amount' => $product->amount, 'order_id' => $order->id]
+                );
+            }
             $user = $order->user()->first();
-            Mail::to($user->email)->send(new OrderCreatedMail($order));
+            //Mail::to($user->email)->send(new OrderCreatedMail($order));
             return response()->json($order, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
@@ -81,8 +84,10 @@ class OrderController extends Controller
         if (Gate::denies('show', $order)) {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $order_with_products = Order::where('id', '=', $order->id)->with('products')->first();
-        return response()->json($order_with_products, 200);
+        $order_dates = Order::find($order->id);
+        $order_with_products_and_amount = DB::select(
+            "SELECT products.*, order_product.amount FROM orders INNER JOIN order_product ON order_product.order_id = ? INNER JOIN products ON products.id = order_product.product_id", [$order_dates->id]);
+        return response()->json(['order_details'=> $order_dates, 'order_with_products_and_amount'=> $order_with_products_and_amount], '200');
     }
 
     /**
