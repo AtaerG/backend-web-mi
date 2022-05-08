@@ -72,8 +72,8 @@ class AppointmentController extends Controller
             $appointment->save();
             $user = DB::select("SELECT email FROM users WHERE id = " . $request->get('user_id'));
             $admin = DB::select("SELECT email FROM users WHERE id = " . $request->get('admin_id'));
-            Mail::to($admin[0]->email)->send(new AppointmentAdminMail($appointment));
-            Mail::to($user[0]->email)->send(new AppointmentUserMail($appointment));
+            //Mail::to($admin[0]->email)->send(new AppointmentAdminMail($appointment));
+            //Mail::to($user[0]->email)->send(new AppointmentUserMail($appointment));
             return response()->json($appointment, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);

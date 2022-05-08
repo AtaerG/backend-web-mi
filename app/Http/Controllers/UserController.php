@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use App\Models\Order;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserRequest;
@@ -78,7 +79,24 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ($user->can('destroy', $user)) {
+            $value = true;
+            $orders = DB::select("SELECT id FROM orders WHERE user_id = ?", [$user->id]);
+            foreach ($orders as $order) {
+                $order = Order::find($order->id);
+                if ($order->status == 'pagado') {
+                    //end iteration
+                    $value = false;
+                    break;
+                }
+            }
+            if (!$value) {
+                return response()->json(['error' => 'No se puede elimianr usuario porque tiene pedidos no entregados'], 404);
+            }
             DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
+            DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
+            //get all orders with user_id and check if they have status equal to pagado
+            DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
+            DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
             $user->delete();
             return response()->json(null, 204);
         } else {
