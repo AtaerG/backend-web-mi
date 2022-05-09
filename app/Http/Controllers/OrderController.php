@@ -59,11 +59,14 @@ class OrderController extends Controller
             $order->country = $request->get('country');
             $order->user()->associate(Auth::user()->id);
             $order->save();
-            $array_prod_ids = explode(',', $request->get('products'));
-            $products = Product::find($array_prod_ids);
-            $order->products()->attach($products);
+            //pass array of products to array
+            foreach (json_decode(json_decode($request->get('products'))) as $product) {
+                DB::table('order_product')->insert(
+                    ['product_id' => $product->product->id, 'amount' => $product->amount, 'order_id' => $order->id]
+                );
+            }
             $user = $order->user()->first();
-            Mail::to($user->email)->send(new OrderCreatedMail($order));
+            //Mail::to($user->email)->send(new OrderCreatedMail($order));
             return response()->json($order, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
@@ -78,11 +81,19 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        if (Gate::denies('show', $order)) {
+        if (Gate::allows('isAdmin') || Gate::allows('isUsers', $order)) {
+            $order_dates = Order::find($order->id);
+
+        $order_with_products_and_amount = DB::select(
+            "SELECT products.*, order_product.amount FROM orders
+            INNER JOIN order_product ON order_product.order_id = orders.id
+            INNER JOIN products ON products.id = order_product.product_id
+            WHERE orders.id = ?",
+            [$order_dates->id]);
+        return response()->json(['order_details'=> $order_dates, 'order_with_products_and_amount'=> $order_with_products_and_amount], '200');
+        } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
         }
-        $order_with_products = Order::where('id', '=', $order->id)->with('products')->first();
-        return response()->json($order_with_products, 200);
     }
 
     /**
@@ -111,6 +122,7 @@ class OrderController extends Controller
 
     public function orderStatus(OrderStatusRequest  $request, Order $order)
     {
+        if (Gate::allows('isAdmin')) {
         $user = $order->user()->first();
         $order->status = $request->get('status');
         if ($request->get('status') === "ended") {
@@ -118,6 +130,9 @@ class OrderController extends Controller
         }
         $order->save();
         return response()->json($order, 201);
+        } else {
+            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+        }
     }
 
     public function orderValoration(OrderValorationRequest $request, Order $order)
@@ -144,7 +159,20 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         if (Gate::allows('isAdmin') || Gate::allows('isUsers', $order)) {
+
             $user = $order->user()->first();
+            $order_with_products_and_amount = DB::select(
+                "SELECT products.*, order_product.amount FROM orders
+                INNER JOIN order_product ON order_product.order_id = orders.id
+                INNER JOIN products ON products.id = order_product.product_id
+                WHERE orders.id = ?",
+            [$order->id]);
+
+            foreach ($order_with_products_and_amount as $product) {
+                $product_to_update = Product::find($product->id);
+                $product_to_update->amount = $product_to_update->amount + $product->amount;
+                $product_to_update->save();
+            }
             DB::delete("DELETE FROM order_product WHERE order_id = ?", [$order->id]);
             Mail::to($user->email)->send(new OrderDeletedMail($order));
             $order->delete();
@@ -159,4 +187,5 @@ class OrderController extends Controller
         $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
         return response()->json($order, 200);
     }
+
 }

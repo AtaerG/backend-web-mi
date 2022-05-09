@@ -79,6 +79,7 @@ Route::middleware('auth:api','role')->group(function () {
         Route::put('orders/{order}', 'update');
         Route::patch('valoration/orders/{order}', 'orderValoration');
         Route::delete('orders/{order}', 'destroy');
+        Route::post('user/order','orderIsUsers');
     });
 
     Route::controller(AppointmentController::class)->group(function () {
@@ -87,6 +88,7 @@ Route::middleware('auth:api','role')->group(function () {
         Route::delete('appointments/{appointment}', 'destroy');
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
+        Route::post('appt-admin-dt','getAdminsAppointmentsWithTimeAndDay');
     });
 
     Route::apiResource('users', UserController::class);
