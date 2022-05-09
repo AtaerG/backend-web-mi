@@ -187,4 +187,5 @@ class OrderController extends Controller
         $order = DB::select("SELECT * FROM orders WHERE user_id = ?", [$request->get('user_id')]);
         return response()->json($order, 200);
     }
+
 }

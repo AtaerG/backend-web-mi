@@ -88,6 +88,7 @@ Route::middleware('auth:api','role')->group(function () {
         Route::delete('appointments/{appointment}', 'destroy');
         Route::post('appt-admin', 'getAdminsAppointments');
         Route::post('appt-user', 'getUsersAppointments');
+        Route::post('appt-admin-dt','getAdminsAppointmentsWithTimeAndDay');
     });
 
     Route::apiResource('users', UserController::class);

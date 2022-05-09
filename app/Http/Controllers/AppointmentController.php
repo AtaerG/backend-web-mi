@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AppointmentRequest;
 use App\Http\Requests\AppointmentAdminRequest;
 use App\Http\Requests\AppointmentUserRequest;
+use App\Http\Requests\AppointmentAdminDayTimeRequest;
 use Illuminate\Support\Facades\Gate;
 
 class AppointmentController extends Controller
@@ -40,6 +41,13 @@ class AppointmentController extends Controller
         }
     }
 
+    public function getAdminsAppointmentsWithTimeAndDay(AppointmentAdminDayTimeRequest $request)
+    {
+        $appointments = DB::select("SELECT appointments.* FROM appointments  WHERE admin_id = ? AND date = ? AND time = ?", [$request->get('admin_id'), $request->get('date'), $request->get('time')] );
+        return response()->json($appointments, 200);
+    }
+
+
     public function getUsersAppointments(AppointmentUserRequest $request)
     {
         if (Gate::denies('isAdmin')) {
@@ -60,9 +68,10 @@ class AppointmentController extends Controller
     public function store(AppointmentRequest $request)
     {
         if (Gate::denies('isAdmin')) {
-            $appointments = DB::select("SELECT * FROM appointments WHERE date = '" . $request->get('date') . "' AND time = '" . $request->get('time') . "'");
+            $appointments = DB::select("SELECT * FROM appointments WHERE date = '" . $request->get('date') . "' AND time = '" . $request->get('time') . "'AND user_id = " . $request->get('user_id'));
+            $appoin = DB::select("SELECT * FROM appointments WHERE date = '" . $request->get('date') . "' AND time = '" . $request->get('time'));
             if ($appointments != null) {
-                return response()->json(['error' => 'La cita para esta hora ya existe, por favor seleccione otra hora']);
+                return response()->json(['error' => 'La cita para esta hora ya existe, por favor seleccione otra hora'], 401);
             }
             $appointment = new Appointment();
             $appointment->user()->associate($request->get('user_id'));

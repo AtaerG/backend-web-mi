@@ -19,9 +19,10 @@ return new class extends Migration
             $table->integer('valoration');
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('product_id')->unsigned();
+            $table->bigInteger('order_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('product_id')->references('id')->on('products');
-
+            $table->foreign('order_id')->references('id')->on('orders');
             $table->timestamps();
         });
     }
