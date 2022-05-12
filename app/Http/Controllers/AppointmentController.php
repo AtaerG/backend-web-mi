@@ -69,9 +69,8 @@ class AppointmentController extends Controller
     {
         if (Gate::denies('isAdmin')) {
             $appointments = DB::select("SELECT * FROM appointments WHERE date = '" . $request->get('date') . "' AND time = '" . $request->get('time') . "'AND user_id = " . $request->get('user_id'));
-            $appoin = DB::select("SELECT * FROM appointments WHERE date = '" . $request->get('date') . "' AND time = '" . $request->get('time'));
-            if ($appointments != null) {
-                return response()->json(['error' => 'La cita para esta hora ya existe, por favor seleccione otra hora'], 401);
+            if($appointments != null){
+                return response()->json(['error' => 'Ya tiene cita a esta hora'], 401);
             }
             $appointment = new Appointment();
             $appointment->user()->associate($request->get('user_id'));

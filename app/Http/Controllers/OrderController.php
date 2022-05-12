@@ -113,7 +113,7 @@ class OrderController extends Controller
             $order->country = $request->get('country');
             $order->save();
             $user = $order->user()->first();
-            Mail::to($user->email)->send(new OrderChangedMail($order));
+            //Mail::to($user->email)->send(new OrderChangedMail($order));
             return response()->json($order, 201);
         } else {
             return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
@@ -126,7 +126,7 @@ class OrderController extends Controller
         $user = $order->user()->first();
         $order->status = $request->get('status');
         if ($request->get('status') === "ended") {
-            Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
+            //Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
         }
         $order->save();
         return response()->json($order, 201);
@@ -174,7 +174,7 @@ class OrderController extends Controller
                 $product_to_update->save();
             }
             DB::delete("DELETE FROM order_product WHERE order_id = ?", [$order->id]);
-            Mail::to($user->email)->send(new OrderDeletedMail($order));
+            //Mail::to($user->email)->send(new OrderDeletedMail($order));
             $order->delete();
             return response()->json(null, 204);
         } else {

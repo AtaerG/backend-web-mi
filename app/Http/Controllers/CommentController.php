@@ -23,6 +23,7 @@ class CommentController extends Controller
             $comment->content = $request->get('content');
             $comment->valoration = $request->get('valoration');
             $comment->user()->associate($request->get('user_id'));
+            $comment->order()->associate($request->get('order_id'));
             $comment->product()->associate($request->get('product_id'));
             $comment->save();
             return response()->json($comment, 201);
