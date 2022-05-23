@@ -31,6 +31,11 @@ class AppointmentController extends Controller
         }
     }
 
+    public function show(Appointment $appointment)
+    {
+        return response()->json($appointment, '200');
+    }
+
     public function getAdminsAppointments(AppointmentAdminRequest $request)
     {
         if (Gate::allows('isAdmin')) {
