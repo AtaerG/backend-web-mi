@@ -27,8 +27,8 @@ class PasswordResetedRequest extends FormRequest
     {
         return [
             'token' => 'required',
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
+            'password' => 'required|min:8',
+            'password_confirm' => 'required|same:password|min:8',
         ];
     }
 
@@ -38,6 +38,8 @@ class PasswordResetedRequest extends FormRequest
             'password.required' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
             'password_confirm.required' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
             'password_confirm.same' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
+            'password.min' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
+            'password_confirm.min' =>  '¡Error. No se puede cambiar la contraseña. Intenta mas tarde!',
         ];
     }
 
