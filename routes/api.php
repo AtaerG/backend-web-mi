@@ -85,6 +85,7 @@ Route::middleware('auth:api','role')->group(function () {
     Route::controller(AppointmentController::class)->group(function () {
         Route::get('appointments', 'index');
         Route::get('appointments/{appointment}', 'show');
+        Route::get('appointments/date/{appointment}', 'getDateOfAppointment');
         Route::post('appointments', 'store');
         Route::delete('appointments/{appointment}', 'destroy');
         Route::post('appt-admin', 'getAdminsAppointments');

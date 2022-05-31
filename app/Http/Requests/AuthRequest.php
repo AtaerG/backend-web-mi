@@ -25,6 +25,7 @@ class AuthRequest extends FormRequest
             'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:8',
+            'token_recapV3' => 'required|string'
         ];
     }
 
@@ -36,6 +37,7 @@ class AuthRequest extends FormRequest
             'email.email' => '¡El email debe tener formato de correo electronico!',
             'password.required' => '¡La contraena es obligatoria!',
             'password.min' => '¡La contraena debe tener al menos 8 digitos!',
+            'token_recapV3.required' => '¡El token es obligatorio!'
         ];
     }
 

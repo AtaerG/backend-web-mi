@@ -27,7 +27,7 @@ class AppointmentController extends Controller
             $appointments = Appointment::get();
             return response()->json($appointments, 200);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -42,7 +42,7 @@ class AppointmentController extends Controller
             $appointments = DB::select("SELECT appointments.*, users.name, users.surname FROM users INNER JOIN appointments ON users.id = appointments.admin_id WHERE admin_id = " . $request->get('admin_id'));
             return response()->json($appointments, 200);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -59,7 +59,7 @@ class AppointmentController extends Controller
             $appointments = DB::select("SELECT appointments.*, users.name, users.surname FROM users INNER JOIN appointments ON users.id = appointments.user_id WHERE user_id = " . $request->get('user_id'));
             return response()->json($appointments, 200);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -85,11 +85,20 @@ class AppointmentController extends Controller
             $appointment->save();
             $user = DB::select("SELECT email FROM users WHERE id = " . $request->get('user_id'));
             $admin = DB::select("SELECT email FROM users WHERE id = " . $request->get('admin_id'));
-            //Mail::to($admin[0]->email)->send(new AppointmentAdminMail($appointment));
-            //Mail::to($user[0]->email)->send(new AppointmentUserMail($appointment));
+            Mail::to($admin[0]->email)->send(new AppointmentAdminMail($appointment));
+            Mail::to($user[0]->email)->send(new AppointmentUserMail($appointment));
             return response()->json($appointment, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
+        }
+    }
+
+    public function getDateOfAppointment(Appointment $appointment){
+        if (Gate::allows('isAdmin') || Gate::allows('isUsers', $appointment)) {
+            $appointment_date = DB::select("SELECT date, time  FROM appointments WHERE id = " . $appointment->id);
+            return response()->json($appointment_date, 200);
+        } else {
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -107,7 +116,7 @@ class AppointmentController extends Controller
             Mail::to($user[0]->email)->send(new AppointmentDeletedMail($appointment));
             return response()->json(null, 204);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 }

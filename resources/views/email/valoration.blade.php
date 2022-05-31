@@ -24,5 +24,5 @@ date_default_timezone_set('Europe/Madrid');
     <h1 class="gradient ">MUEBLES INTELIGENTES</h1>
     <div class="">¡{{$user->name}}, usted ya recibido su pedido!</div>
     <p>Por favor, revisa  y valora cada producto de tu pedido</p>
-    <a href="http://mi.es/orders" class="button">Hazlo pinchado aqui</a>
+    <a href="https://mueblesint.es/#/orders" class="button">Hazlo pinchado aqui</a>
 </div>

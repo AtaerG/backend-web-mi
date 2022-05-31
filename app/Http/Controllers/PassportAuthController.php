@@ -17,6 +17,23 @@ class PassportAuthController extends Controller
      */
     public function register(AuthRequest $request)
     {
+        $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
+            $url = 'https://www.google.com/recaptcha/api/siteverify';
+            $data = array('secret' => env('RECAPTCHAV3_SECRET'), 'response' => $token_recapV3);
+            $options = array(
+                'http' => array(
+                    'method'  => 'POST',
+                    'header'  => array('Content-type: application/x-www-form-urlencoded'),
+                    'content' => http_build_query($data)
+                )
+            );
+            $context = stream_context_create($options);
+            $result = json_decode(file_get_contents($url, false, $context));
+
+            if ($result->success === FALSE) {
+                return response()->json(['error' => 'Error! Eres robot!'], 504);
+            }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -86,6 +103,6 @@ class PassportAuthController extends Controller
     public function logout()
     {
         Auth::user()->token()->revoke();
-        return response(['message' => 'You have been successfully logged out.'], 200);
+        return response(['message' => 'Exito'], 200);
     }
 }

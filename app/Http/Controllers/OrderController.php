@@ -59,17 +59,16 @@ class OrderController extends Controller
             $order->country = $request->get('country');
             $order->user()->associate(Auth::user()->id);
             $order->save();
-            //pass array of products to array
             foreach (json_decode(json_decode($request->get('products'))) as $product) {
                 DB::table('order_product')->insert(
                     ['product_id' => $product->product->id, 'amount' => $product->amount, 'order_id' => $order->id]
                 );
             }
             $user = $order->user()->first();
-            //Mail::to($user->email)->send(new OrderCreatedMail($order));
+            Mail::to($user->email)->send(new OrderCreatedMail($order));
             return response()->json($order, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -92,7 +91,7 @@ class OrderController extends Controller
             [$order_dates->id]);
         return response()->json(['order_details'=> $order_dates, 'order_with_products_and_amount'=> $order_with_products_and_amount], '200');
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -113,10 +112,10 @@ class OrderController extends Controller
             $order->country = $request->get('country');
             $order->save();
             $user = $order->user()->first();
-            //Mail::to($user->email)->send(new OrderChangedMail($order));
+            Mail::to($user->email)->send(new OrderChangedMail($order));
             return response()->json($order, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -126,12 +125,12 @@ class OrderController extends Controller
         $user = $order->user()->first();
         $order->status = $request->get('status');
         if ($request->get('status') === "ended") {
-            //Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
+            Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
         }
         $order->save();
         return response()->json($order, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -143,10 +142,10 @@ class OrderController extends Controller
                 $order->save();
                 return response()->json($order, 201);
             } else {
-                return response()->json(['error' => 'No puede valorar un pedido que no ha finalizado'], 401);
+                return response()->json(['error' => 'No puede valorar un pedido que no esta finalizado'], 401);
             }
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -174,11 +173,11 @@ class OrderController extends Controller
                 $product_to_update->save();
             }
             DB::delete("DELETE FROM order_product WHERE order_id = ?", [$order->id]);
-            //Mail::to($user->email)->send(new OrderDeletedMail($order));
+            Mail::to($user->email)->send(new OrderDeletedMail($order));
             $order->delete();
             return response()->json(null, 204);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
