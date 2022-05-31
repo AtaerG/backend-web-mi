@@ -22,7 +22,7 @@ class UserController extends Controller
             $users = User::get();
             return response()->json($users, 200);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -45,7 +45,7 @@ class UserController extends Controller
         if ($user->can('show', $user)) {
             return response()->json($user, 200);
         } else {
-            return response()->json(['error' => 'No tiene permimsos para ver usuario'], 403);
+            return response()->json(['error' => 'No tiene permimsos'], 403);
         }
     }
 
@@ -66,7 +66,7 @@ class UserController extends Controller
             $user->save();
             return response()->json($user, 201);
         } else {
-            return response()->json(['error' => 'No tiene permimsos para modificar usuario'], 403);
+            return response()->json(['error' => 'No tiene permimsos'], 403);
         }
     }
 
@@ -84,23 +84,21 @@ class UserController extends Controller
             foreach ($orders as $order) {
                 $order = Order::find($order->id);
                 if ($order->status == 'pagado') {
-                    //end iteration
                     $value = false;
                     break;
                 }
             }
             if (!$value) {
-                return response()->json(['error' => 'No se puede elimianr usuario porque tiene pedidos no entregados'], 404);
+                return response()->json(['error' => 'No se puede eliminar el usuario'], 404);
             }
             DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
             DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
-            //get all orders with user_id and check if they have status equal to pagado
             DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
             DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
             $user->delete();
             return response()->json(null, 204);
         } else {
-            return response()->json(['error' => 'No tiene permisos para eliminar usuario'], 403);
+            return response()->json(['error' => 'No tiene permisos'], 403);
         }
     }
 

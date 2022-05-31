@@ -26,7 +26,7 @@ class OrderValorationRequest extends FormRequest
     public function rules()
     {
         return [
-            'valoration'=>'required|gte:0',
+            'valoration'=>'required|gte:0|lte:5',
         ];
     }
 
@@ -34,6 +34,7 @@ class OrderValorationRequest extends FormRequest
         return [
             'valoration.required' => '¡La valoracion del pedido es obligatorio!',
             'valoration.gte' => '¡La valoracion del pedido debe ser mayor o igual que 0!',
+            'valoration.lte' => '¡La valoracion del pedido debe ser menor o igual que 5!',
         ];
     }
 

@@ -28,7 +28,7 @@ class CommentController extends Controller
             $comment->save();
             return response()->json($comment, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -47,7 +47,7 @@ class CommentController extends Controller
             $comment->save();
             return response()->json($comment, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
@@ -63,7 +63,7 @@ class CommentController extends Controller
             $comment->delete();
             return response()->json(null, 204);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 }

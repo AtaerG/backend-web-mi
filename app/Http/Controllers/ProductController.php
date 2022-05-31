@@ -42,7 +42,7 @@ class ProductController extends Controller
             $product->save();
             return response()->json($product, 201);
         } else {
-            return response()->json(['error' => 'No tiene permisos para hacer esta accion'], 401);
+            return response()->json(['error' => 'No tiene permisos'], 401);
         }
     }
 
