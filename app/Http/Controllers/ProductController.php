@@ -47,7 +47,7 @@ class ProductController extends Controller
                 $product->save();
                 return response()->json($product, 201);
             } catch (\Exception $e) {
-                return response()->json(['error' => 'Error al crear el producto.'], 500);
+                return response()->json(['error' => 'Error al crear el producto. '. $e], 500);
             }
         } else {
             return response()->json(['error' => 'No tiene permisos'], 401);
