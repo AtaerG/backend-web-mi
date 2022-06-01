@@ -19,8 +19,12 @@ class UserController extends Controller
     public function index()
     {
         if (Gate::allows('isAdmin')) {
-            $users = User::get();
-            return response()->json($users, 200);
+            try {
+                $users = User::get();
+                return response()->json($users, 200);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al obtener los usuarios'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permisos'], 401);
         }
@@ -28,8 +32,12 @@ class UserController extends Controller
 
     public function getAdmins()
     {
-        $admins = DB::select("SELECT id, name FROM users WHERE role = 'admin'");
-        return response()->json($admins, 200);
+        try {
+            $admins = DB::select("SELECT id, name FROM users WHERE role = 'admin'");
+            return response()->json($admins, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los administradores'], 401);
+        }
     }
 
 
@@ -43,7 +51,11 @@ class UserController extends Controller
     public function show(User $user)
     {
         if ($user->can('show', $user)) {
-            return response()->json($user, 200);
+            try {
+                return response()->json($user, 200);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al obtener el usuario'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permimsos'], 403);
         }
@@ -59,12 +71,16 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         if ($user->can('update', $user)) {
-            $user->name = $request->get('name');
-            $user->surname = $request->get('surname');
-            $user->email = $request->get('email');
-            $user->role = $request->get('role');
-            $user->save();
-            return response()->json($user, 201);
+            try {
+                $user->name = $request->get('name');
+                $user->surname = $request->get('surname');
+                $user->email = $request->get('email');
+                $user->role = $request->get('role');
+                $user->save();
+                return response()->json($user, 201);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al actualizar el usuario'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permimsos'], 403);
         }
@@ -79,24 +95,28 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ($user->can('destroy', $user)) {
-            $value = true;
-            $orders = DB::select("SELECT id FROM orders WHERE user_id = ?", [$user->id]);
-            foreach ($orders as $order) {
-                $order = Order::find($order->id);
-                if ($order->status == 'pagado') {
-                    $value = false;
-                    break;
+            try {
+                $value = true;
+                $orders = DB::select("SELECT id FROM orders WHERE user_id = ?", [$user->id]);
+                foreach ($orders as $order) {
+                    $order = Order::find($order->id);
+                    if ($order->status == 'pagado') {
+                        $value = false;
+                        break;
+                    }
                 }
+                if (!$value) {
+                    return response()->json(['error' => 'No se puede eliminar el usuario'], 404);
+                }
+                DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
+                DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
+                DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
+                DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
+                $user->delete();
+                return response()->json(null, 204);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al eliminar el usuario'], 401);
             }
-            if (!$value) {
-                return response()->json(['error' => 'No se puede eliminar el usuario'], 404);
-            }
-            DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
-            DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
-            DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
-            DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
-            $user->delete();
-            return response()->json(null, 204);
         } else {
             return response()->json(['error' => 'No tiene permisos'], 403);
         }
@@ -104,8 +124,12 @@ class UserController extends Controller
 
     public function getOnlyAdminsIdForChatting()
     {
-        $users = User::get();
-        $names = $users->map->only(['name']);
-        return response()->json($names, 200);
+        try{
+            $users = User::get();
+            $names = $users->map->only(['name']);
+            return response()->json($names, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los administradores'], 401);
+        }
     }
 }

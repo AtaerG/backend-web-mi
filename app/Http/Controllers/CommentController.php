@@ -19,14 +19,18 @@ class CommentController extends Controller
     public function store(CommentRequest $request)
     {
         if (Gate::denies('isAdmin')) {
-            $comment = new Comment();
-            $comment->content = $request->get('content');
-            $comment->valoration = $request->get('valoration');
-            $comment->user()->associate($request->get('user_id'));
-            $comment->order()->associate($request->get('order_id'));
-            $comment->product()->associate($request->get('product_id'));
-            $comment->save();
-            return response()->json($comment, 201);
+            try{
+                $comment = new Comment();
+                $comment->content = $request->get('content');
+                $comment->valoration = $request->get('valoration');
+                $comment->user()->associate($request->get('user_id'));
+                $comment->order()->associate($request->get('order_id'));
+                $comment->product()->associate($request->get('product_id'));
+                $comment->save();
+                return response()->json($comment, 201);
+            } catch (\Exception $e){
+                return response()->json(['error' => 'Error al crear el comentario'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permisos'], 401);
         }
@@ -42,10 +46,14 @@ class CommentController extends Controller
     public function update(CommentRequest $request, Comment $comment)
     {
         if (!Gate::allows('isUsers', $comment)) {
-            $comment->valoration = $request->get('valoration');
-            $comment->content = $request->get('content');
-            $comment->save();
-            return response()->json($comment, 201);
+            try{
+                $comment->valoration = $request->get('valoration');
+                $comment->content = $request->get('content');
+                $comment->save();
+                return response()->json($comment, 201);
+            } catch (\Exception $e){
+                return response()->json(['error' => 'Error al actualizar el comentario'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permisos'], 401);
         }
@@ -60,8 +68,12 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         if (Gate::allows('isUsers', $comment) || Gate::allows('isAdmin')) {
-            $comment->delete();
-            return response()->json(null, 204);
+            try{
+                $comment->delete();
+                return response()->json(null, 204);
+            } catch (\Exception $e){
+                return response()->json(['error' => 'Error al eliminar el comentario'], 401);
+            }
         } else {
             return response()->json(['error' => 'No tiene permisos'], 401);
         }

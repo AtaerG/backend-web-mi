@@ -13,26 +13,35 @@ use App\Mail\PassportResetMail;
 
 class PasswordController extends Controller
 {
-    public function forgot(PasswordRequest $request){
+    public function forgot(PasswordRequest $request)
+    {
+        try {
+            $email = $request->get('email');
 
-        $email = $request->get('email');
+            $token = Str::random(10);
 
-        $token = Str::random(10);
+            DB::table('password_resets')->insert([
+                'email' => $email,
+                'token' => $token
+            ]);
 
-        DB::table('password_resets')->insert([
-            'email' => $email,
-            'token' => $token
-        ]);
-
-        return response()->json($token, 200);
+            return response()->json($token, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error'], 401);
+        }
     }
 
-    public function reset(PasswordResetedRequest $request){
-        $token =  $request->token;
-        $passwordResets = DB::table('password_resets')->where('token', $token)->first();
-        $user = User::where('email', $passwordResets->email)->first();
-        $user->password = bcrypt($request->password);
-        $user->save();
-        return response()->json(['message'=>'success'], 200);
+    public function reset(PasswordResetedRequest $request)
+    {
+        try {
+            $token =  $request->token;
+            $passwordResets = DB::table('password_resets')->where('token', $token)->first();
+            $user = User::where('email', $passwordResets->email)->first();
+            $user->password = bcrypt($request->password);
+            $user->save();
+            return response()->json(['message' => 'success'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error'], 401);
+        }
     }
 }
