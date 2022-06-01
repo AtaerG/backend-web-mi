@@ -105,15 +105,22 @@ class UserController extends Controller
                         break;
                     }
                 }
+
                 if (!$value) {
                     return response()->json(['error' => 'No se puede eliminar el usuario'], 404);
                 }
-                DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
-                DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
-                DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
-                DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
-                $user->delete();
-                return response()->json(null, 204);
+                if ($user->role == 'admin') {
+                    DB::delete("DELETE FROM appointments WHERE admin_id = ?", [$user->id]);
+                    $user->delete();
+                    return response()->json(null, 204);
+                } else {
+                    DB::delete("DELETE FROM comments WHERE user_id = ?", [$user->id]);
+                    DB::delete("DELETE FROM order_product WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?)", [$user->id]);
+                    DB::delete("DELETE FROM orders WHERE user_id = ?", [$user->id]);
+                    DB::delete("DELETE FROM appointments WHERE user_id = ?", [$user->id]);
+                    $user->delete();
+                    return response()->json(null, 204);
+                }
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Error al eliminar el usuario'], 401);
             }
@@ -124,7 +131,7 @@ class UserController extends Controller
 
     public function getOnlyAdminsIdForChatting()
     {
-        try{
+        try {
             $users = User::get();
             $names = $users->map->only(['name']);
             return response()->json($names, 200);
