@@ -17,7 +17,9 @@ class PassportAuthController extends Controller
      */
     public function register(AuthRequest $request)
     {
-        $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
+        try {
+
+            $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
             $url = 'https://www.google.com/recaptcha/api/siteverify';
             $data = array('secret' => env('RECAPTCHAV3_SECRET'), 'response' => $token_recapV3);
             $options = array(
@@ -34,17 +36,22 @@ class PassportAuthController extends Controller
                 return response()->json(['error' => 'Error! Eres robot!'], 504);
             }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'surname' => $request->surname,
-            'password' => bcrypt($request->password),
-            'role' => 'normal_user'
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'surname' => $request->surname,
+                'password' => bcrypt($request->password),
+                'role' => 'normal_user'
+            ]);
+            $token = $user->createToken('miauth')->accessToken;
+            try {
+                Mail::to($user->email)->send(new UserCreatedMail($user));
+            } catch (\Exception $e) {
 
-        $token = $user->createToken('miauth')->accessToken;
-        Mail::to($user->email)->send(new UserCreatedMail($user));
-        return response()->json(['token' => $token], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al crear el usuario'], 401);
+        }
     }
 
     /**
@@ -53,6 +60,7 @@ class PassportAuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
+
             $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
             $url = 'https://www.google.com/recaptcha/api/siteverify';
             $data = array('secret' => env('RECAPTCHAV3_SECRET'), 'response' => $token_recapV3);
@@ -102,7 +110,11 @@ class PassportAuthController extends Controller
     }
     public function logout()
     {
-        Auth::user()->token()->revoke();
-        return response(['message' => 'Exito'], 200);
+        try {
+            Auth::user()->token()->revoke();
+            return response(['message' => 'Exito'], 200);
+        } catch (\Exception $e) {
+            return response(['error' => 'Error!'], 500);
+        }
     }
 }
