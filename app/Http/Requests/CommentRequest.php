@@ -27,7 +27,7 @@ class CommentRequest extends FormRequest
     {
         return [
             'content'=>'required',
-            'valoration'=>'required|gte:0|lte:5',
+            'valoration'=>'required|gte:1|lte:5',
             'user_id'=>'required|numeric',
             'product_id'=>'required|numeric',
             'order_id'=>'required|numeric',
@@ -44,7 +44,7 @@ class CommentRequest extends FormRequest
             'product_id.numeric' => '¡El id de producto debe ser un numero!',
             'order_id.numeric' => '¡El id de pedido debe ser un numero!',
             'order_id.numeric' => '¡El id de pedido debe ser un numero!',
-            'valoration.gte' => '¡La cantidad debe ser mayor o igual 0!',
+            'valoration.gte' => '¡La cantidad debe ser mayor o igual 1!',
             'valoration.lte' => 'La cantidad debe ser menor o igual que 5',
         ];
     }

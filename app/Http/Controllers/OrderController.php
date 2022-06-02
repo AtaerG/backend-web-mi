@@ -61,6 +61,7 @@ class OrderController extends Controller
                 $order->status = $request->get('status');
                 $order->city = $request->get('city');
                 $order->state = $request->get('state');
+                $order->valoration = 0;
                 $order->country = $request->get('country');
                 $order->user()->associate(Auth::user()->id);
                 $order->save();
@@ -159,7 +160,7 @@ class OrderController extends Controller
             }
 
             try {
-                if ($request->get('status') === "ended") {
+                if ($request->get('status') === "terminado") {
                     Mail::to($user->email)->send(new ValorationMail($order, Auth::user()));
                 }
             } catch (\Exception $e) {
@@ -176,7 +177,7 @@ class OrderController extends Controller
     {
         if (Gate::denies('isAdmin')) {
             try {
-                if ($order->status != 'ended') {
+                if ($order->status === 'terminado') {
                     $order->valoration = $request->get('valoration');
                     $order->save();
                     return response()->json($order, 201);

@@ -60,7 +60,7 @@ class PassportAuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-
+            /*
             $token_recapV3 = filter_var($request->token_recapV3, FILTER_SANITIZE_STRING);
             $url = 'https://www.google.com/recaptcha/api/siteverify';
             $data = array('secret' => env('RECAPTCHAV3_SECRET'), 'response' => $token_recapV3);
@@ -77,7 +77,7 @@ class PassportAuthController extends Controller
             if ($result->success === FALSE) {
                 return response()->json(['error' => 'Error! Eres robot!'], 504);
             }
-
+            */
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
                 $user = Auth::user();
