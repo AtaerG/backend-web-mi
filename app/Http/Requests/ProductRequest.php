@@ -27,7 +27,7 @@ class ProductRequest extends FormRequest
     {
         return [
         'name'=>'required',
-        'amount'=>'required|gte:0',
+        'amount'=>'required|gte:0|integer',
         'price'=>'required|gt:0',
         'description'=>'required',
         'image_url'=>'required',
@@ -47,6 +47,7 @@ class ProductRequest extends FormRequest
             'price.gt' => '¡El precio debe ser mayor que 0!',
             'description.required' => '¡La descripcion es obligatoria!',
             'image_url.required' => '¡La imagen es obligatoria!',
+            'amount.integer' => '¡La cantidad debe ser un numero entero!',
             'tag.required' => '¡El tag es obligatorio!'
         ];
     }
